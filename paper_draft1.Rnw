@@ -1,0 +1,196 @@
+\documentclass{sigchi}
+
+\pagenumbering{arabic}
+
+<<setup, include=FALSE, cache=FALSE>>=
+opts_chunk$set(fig.path='plots/', fig.align='center', fig.show='asis', echo=FALSE, comment = "", message = FALSE, tidy=FALSE, dev='pdf', out.width="\\linewidth")
+options(replace.assign=TRUE)
+library(knitr)
+library(formatR)
+library(ggplot2)
+library(lsr)
+library(psych)
+setwd("~/Dropbox/r-code/SUS/")
+sus2 = read.csv("sus2_data.csv")
+orisus = read.csv("ori_sus_data.csv")
+revsus = read.csv("rev_sus_data.csv")
+@
+
+% Load basic packages
+\usepackage{balance}  % to better equalize the last page
+\usepackage{graphics} % for EPS, load graphicx instead
+\usepackage{times}    % comment if you want LaTeX's default font
+\usepackage{url}      % llt: nicely formatted URLs
+
+% llt: Define a global style for URLs, rather that the default one
+\makeatletter
+\def\url@leostyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\bf\ttfamily}}}
+\makeatother
+\urlstyle{leo}
+
+
+% To make various LaTeX processors do the right thing with page size.
+\def\pprw{8.5in}
+\def\pprh{11in}
+\special{papersize=\pprw,\pprh}
+\setlength{\paperwidth}{\pprw}
+\setlength{\paperheight}{\pprh}
+\setlength{\pdfpagewidth}{\pprw}
+\setlength{\pdfpageheight}{\pprh}
+
+% Make sure hyperref comes last of your loaded packages, 
+% to give it a fighting chance of not being over-written, 
+% since its job is to redefine many LaTeX commands.
+\usepackage[pdftex]{hyperref}
+\hypersetup{
+pdftitle={SIGCHI Conference Proceedings Format},
+pdfauthor={LaTeX},
+pdfkeywords={SIGCHI, proceedings, archival format},
+bookmarksnumbered,
+pdfstartview={FitH},
+colorlinks,
+citecolor=black,
+filecolor=black,
+linkcolor=black,
+urlcolor=black,
+breaklinks=true,
+}
+
+% create a shortcut to typeset table headings
+\newcommand\tabhead[1]{\small\textbf{#1}}
+
+
+% End of preamble. Here it comes the document.
+\begin{document}
+
+\title{SUS 2.0: Updating the System Usability Scale to conform with insights from questionnaire design research}
+
+\numberofauthors{2}
+\author{
+  \alignauthor Ren\'{e} F. Kizilcec\\
+    \affaddr{Department of Communication}\\
+    \affaddr{Stanford University}\\
+    \email{kizilcec@stanford.edu}
+  \alignauthor Hendrik Mueller\\
+    \affaddr{UX Research}\\
+    \affaddr{Google}\\
+    \email{hendrikm@google.com}
+}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\keywords{}
+
+\category{H.5.m.}{Information Interfaces and Presentation (e.g. HCI)}{Miscellaneous}
+
+
+\section{Introduction}
+
+
+<<>>=
+# SUS 2.0
+# q1 How easy or difficult was it to learn how to use the system?
+# q2 How much more is there to learn about the system?
+# q3 How confident were you using the system?
+# q4 How easy or difficult is it to use the system?
+# q5 How consistent is the system?
+
+# Criterion 
+cor.test(oe,rowSums(sus2))
+cor.test(difficulty,rowSums(sus2))
+cor.test(redo,rowSums(sus2))
+cor.test(learnsat,rowSums(sus2))
+
+# Internal Consistency
+cor.test(rowSums(sus2), q1)
+cor.test(rowSums(sus2), q2)
+cor.test(rowSums(sus2), q3)
+cor.test(rowSums(sus2), q4)
+cor.test(rowSums(sus2), q5)
+
+# Cronbach's Alpha
+alpha(sus2)
+
+# Split Half Reliability
+rhh=cor(rowSums(cbind(q1,q3,q5), na.rm=T), rowSums(cbind(q2,q4), na.rm=T))
+(2*rhh)/(1+rhh)
+
+# Factor Analysis
+plot(princomp(~q1+q2+q3+q4+q5, data=sus2, scores=T), type="lines")
+
+eigen(cov(sus2, use="pair"))
+eigen.loadings(eigen(cov(sus2, use="pair")))
+princomp(covmat=cov(sus2, use="pair"))$loadings
+plot(princomp(covmat=cov(sus2, use="pair")), type="lines")
+
+fa.parallel(sus2)
+
+# REV SUS
+# I needed to learn very few things before I could get going with this system
+# I think that I would not need any support of a technical person to be able to use this system
+# I did not feel very confident using the system
+# I found the system very manageable to use
+# I would imagine that most people would learn to use this system very slowly
+# I found the system appropriately simple
+# I thought the system was hard to use
+# I found the various functions in this system were not well integrated
+# I did not think there was too much inconsistency in this system
+# I do not think that I would like to use this system frequently
+
+
+alpha(rev_sus)
+fa.diagram(fa(rev_sus,1))
+fa.diagram(fa(rev_sus,2))
+
+
+# Original SUS
+# I needed to learn a lot of things before I could get going with this system
+# I think that I would need the support of a technical person to be able to use this system
+# I felt very confident using the system
+# I found the system very cumbersome to use
+# I would imagine that most people would learn to use this system very quickly
+# I found the system unnecessarily complex
+# I thought the system was easy to use
+# I found the various functions in this system were well integrated
+# I thought there was too much inconsistency in this system
+# I think that I would like to use this system frequently
+
+alpha(ori_sus)
+fa.diagram(fa(ori_sus,1))
+fa.diagram(fa(ori_sus,2))
+
+
+cor.test(oe,rowSums(ori_sus))
+cor.test(difficulty,rowSums(ori_sus))
+cor.test(redo,rowSums(ori_sus))
+cor.test(learnsat,rowSums(ori_sus))
+
+
+t.test(ori_sus$p1, rev_sus$p1)
+t.test(ori_sus$p2, rev_sus$p2)
+t.test(ori_sus$p3, rev_sus$p3)
+t.test(ori_sus$p4, rev_sus$p4)
+t.test(ori_sus$p5, rev_sus$p5) #not
+t.test(ori_sus$p6, rev_sus$p6) #not
+t.test(ori_sus$p7, rev_sus$p7)
+t.test(ori_sus$p8, rev_sus$p8) #not
+t.test(ori_sus$p9, rev_sus$p9)
+t.test(ori_sus$p10, rev_sus$p10)
+
+t.test(rowMeans(ori_sus), rowMeans(rev_sus))
+
+@
+
+
+
+
+\section{Acknowledgments}
+
+\bibliographystyle{acm-sigchi}
+\bibliography{suslit}
+\end{document}
