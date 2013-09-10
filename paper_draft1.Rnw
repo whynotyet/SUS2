@@ -10,16 +10,19 @@ library(formatR)
 library(ggplot2)
 library(lsr)
 library(psych)
-setwd("~/Dropbox/r-code/SUS/")
-sus2 = read.csv("sus2_data.csv")
-orisus = read.csv("ori_sus_data.csv")
-revsus = read.csv("rev_sus_data.csv")
+setwd("~/Dropbox/r-code/SUS2/")
+m.sus2 = read.csv("sus2_medstat.csv")
+m.orisus = read.csv("ori_sus_medstat.csv")
+m.revsus = read.csv("rev_sus_medstat.csv")
+a.sus2 = read.csv("sus2_algo.csv")
+a.orisus = read.csv("ori_sus_algo.csv")
+a.revsus = read.csv("rev_sus_algo.csv")
 @
 
 % Load basic packages
 \usepackage{balance}  % to better equalize the last page
 \usepackage{graphics} % for EPS, load graphicx instead
-\usepackage{times}    % comment if you want LaTeX's default font
+%\usepackage{times}    % comment if you want LaTeX's default font
 \usepackage{url}      % llt: nicely formatted URLs
 
 % llt: Define a global style for URLs, rather that the default one
@@ -91,8 +94,88 @@ breaklinks=true,
 
 \section{Introduction}
 
+The SUS is used extensively to evaluate systems' usability and it is thus important that it provides accurate results. Since its introduction in 19XX, there have been critical advancement in the literature on questionnaire and question design regarding the identification of question biases and how to avoid them. As a matter of fact, the SUS is vulnerable to several well-known biases as a result of how the items and scale are constructed.
 
-<<>>=
+\section{Background}
+
+Maybe some background on the development and testing of the SUS.
+
+\subsection{Survey Biases}
+\subsubsection{Satisficing}
+\subsubsection{Acquiescence}
+\subsubsection{Question order}
+\subsubsection{Social Desirability}
+\subsubsection{Answer Options}
+\subsubsection{Hypotheticals}
+\subsubsection{Leading Information}
+
+\section{Scale Evaluation}
+
+\subsection{Data}
+Course participants (N$_A$=1746 and N$_B$=406) from two online education courses (denoted A and B) offered by Stanford University were asked to take an end-of-course survey which randomly assigned them into one of three weighted groups: original SUS (25\%), reversed SUS (25\%), and SUS 2.0 (50\%). This yielded N$_A^{original}$=439, N$_A^{reversed}$=438, and N$_A^{2.0}$=869 from one course, and N$_B^{original}$=96, N$_B^{reversed}$=105, and N$_B^{2.0}$=205 from the other course. The system that respondents were asked to evaluate comprised of the course sites for browsing and watching lecture videos. In addition, as part of the survey, respondents were asked to rate their overall experience with the course, their likelihood of taking another course with the same format, their satisfaction with the amount they learnt, and the difficulty of the course.
+
+The two online courses were offered on two distinct online platforms that shared the same core features but differed considerably in design. Based on a design heuristic evaluation of the two systems, it was determined that B had more usability problems than A. [Need to talk about how this was evaluated. E.g. \url{http://en.wikipedia.org/wiki/Heuristic_evaluation}]
+
+\subsection{Acquiescence Bias in the SUS}
+
+<<eval=FALSE>>=
+alpha(m.revsus[,1:10])$total
+alpha(a.revsus[,1:10])$total
+alpha(m.orisus[,1:10])$total
+alpha(a.orisus[,1:10])$total
+
+omega(m.revsus[,1:10])
+omega(a.revsus[,1:10])
+omega(m.orisus[,1:10])
+omega(a.orisus[,1:10])
+
+fa.diagram(fa(m.revsus[,1:10],1))
+fa.diagram(fa(m.revsus[,1:10],2))
+
+head(a.sus2)
+
+# Original SUS
+# I needed to learn a lot of things before I could get going with this system
+# I think that I would need the support of a technical person to be able to use this system
+# I felt very confident using the system
+# I found the system very cumbersome to use
+# I would imagine that most people would learn to use this system very quickly
+# I found the system unnecessarily complex
+# I thought the system was easy to use
+# I found the various functions in this system were well integrated
+# I thought there was too much inconsistency in this system
+# I think that I would like to use this system frequently
+
+alpha(m.orisus[,1:10])
+fa.diagram(fa(ori_sus,1))
+fa.diagram(fa(ori_sus,2))
+
+
+cor.test(oe,rowSums(ori_sus))
+cor.test(difficulty,rowSums(ori_sus))
+cor.test(redo,rowSums(ori_sus))
+cor.test(learnsat,rowSums(ori_sus))
+
+
+t.test(ori_sus$p1, rev_sus$p1)
+t.test(ori_sus$p2, rev_sus$p2)
+t.test(ori_sus$p3, rev_sus$p3)
+t.test(ori_sus$p4, rev_sus$p4)
+t.test(ori_sus$p5, rev_sus$p5) #not
+t.test(ori_sus$p6, rev_sus$p6) #not
+t.test(ori_sus$p7, rev_sus$p7)
+t.test(ori_sus$p8, rev_sus$p8) #not
+t.test(ori_sus$p9, rev_sus$p9)
+t.test(ori_sus$p10, rev_sus$p10)
+
+t.test(rowMeans(ori_sus), rowMeans(rev_sus))
+
+@
+
+\subsection{Evaluating the SUS 2.0}
+
+
+<<eval=FALSE>>=
 # SUS 2.0
 # q1 How easy or difficult was it to learn how to use the system?
 # q2 How much more is there to learn about the system?
@@ -129,6 +212,7 @@ princomp(covmat=cov(sus2, use="pair"))$loadings
 plot(princomp(covmat=cov(sus2, use="pair")), type="lines")
 
 fa.parallel(sus2)
+
 
 # REV SUS
 # I needed to learn very few things before I could get going with this system
@@ -187,9 +271,34 @@ t.test(rowMeans(ori_sus), rowMeans(rev_sus))
 @
 
 
+\begin{table*}
+\small
+\centering
+\caption{Items from the original SUS, reversed SUS, and SUS 2.0}
+\label{tab:items}
+\begin{tabular}{| r | p{5cm} | p{5cm} | p{5cm} |}
+\hline
+\#  & Original SUS & Reversed SUS & SUS 2.0 \\
+\hline
+1  & I needed to learn a lot of things before I could get going with this system   & I needed to learn very few things before I could get going with this system & How much more is there to learn about the system? \\ \hline
+2  & I think that I would need the support of a technical person to be able to use this system & I think that I would not need any support of a technical person to be able to use this system & How likely are you to need support of a technical person to be able to use the system? \\ \hline
+3  & I felt very confident using the system    & I did not feel very confident using the system & How confident are you using the system? \\ \hline
+4  & I found the system very cumbersome to use & I found the system very manageable to use      & How cumbersome is it to use the system? \\ \hline
+5  & I would imagine that most people would learn to use this system very quickly  & I would imagine that most people would learn to use this system very slowly & How easy or difficult is it to learn how to use the system? \\ \hline
+6  & I found the system unnecessarily complex  & I found the system appropriately simple        & How complex is the system? \\ \hline
+7  & I thought the system was easy to use      & I thought the system was hard to use           & How easy or difficult is it to use the system? \\ \hline
+8  & I found the various functions in this system were well integrated & I found the various functions in this system were not well integrated & How integrated are the system’s various functions? \\ \hline
+9  & I thought there was too much inconsistency in this system         & I did not think there was too much inconsistency in this system       & How consistent is the system? \\ \hline
+10 & I think that I would like to use this system frequently           & I do not think that I would like to use this system frequently        & How much do you like or dislike the system? \\
+\hline
+\end{tabular}
+\end{table*}
 
+\section{Discussion}
 
-\section{Acknowledgments}
+\section{Conclusion}
+
+% \section{Acknowledgments}
 
 \bibliographystyle{acm-sigchi}
 \bibliography{suslit}
