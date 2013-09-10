@@ -118,6 +118,7 @@ The two online courses were offered on two distinct online platforms that shared
 
 \subsection{Acquiescence Bias in the SUS}
 
+In this section we provide strong evidence for acquiescence bias in the SUS by comparing original SUS scores against scores of the the reversed SUS. If acquiescence bias exists, we would expect respondents to tend to agree with the statement, independent of whether its tone is positive or negative. This would lead to significant difference 
 <<eval=FALSE>>=
 alpha(m.revsus[,1:10])$total
 alpha(a.revsus[,1:10])$total
