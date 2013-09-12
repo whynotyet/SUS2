@@ -9,6 +9,7 @@ library(knitr)
 library(formatR)
 library(ggplot2)
 library(grid)
+library(boot)
 library(lsr)
 library(psych)
 setwd("~/Dropbox/r-code/SUS2/")
@@ -18,6 +19,18 @@ m.revsus = read.csv("rev_sus_medstat.csv")
 a.sus2 = read.csv("sus2_algo.csv")
 a.orisus = read.csv("ori_sus_algo.csv")
 a.revsus = read.csv("rev_sus_algo.csv")
+SE=function(x){
+    return(sqrt(var(x)/length(x)))
+}
+convSUS = function(x) {
+    return(rowSums((x+1)*2))
+}
+convSUS2 = function(x) {
+    return(10*(as.matrix(x+1) %*% (c(5,5,7,7,5)/20))[,1])
+}
+convSUS2s = function(x) {
+    return(10*(as.matrix(x+1) %*% (c(5,7,7,5)/25))[,1])
+}
 @
 
 % Load basic packages
@@ -86,7 +99,7 @@ breaklinks=true,
 \maketitle
 
 \begin{abstract}
-
+The System Usability Scale (SUS) is probably the most widely employed measure of usability. Numerous publications have been devoted to assessing its psychometric properties and using it as a gold standard in the development of alternative metrics. From a questionnaire design perspective, however, the SUS has striking deficiencies which lead to biased measures of usability. First, we review the literature on survey biases, inspect each SUS item for issues and show that the SUS is vulnerable to significant acquiescence bias using a survey experiment. We then propose the SUS 2.0, an updated version of the SUS, which conforms to insights from questionnaire design research, and present its favorable psychometric properties.
 \end{abstract}
 
 \keywords{SUS; questionnaire; surveys}
@@ -96,11 +109,12 @@ breaklinks=true,
 
 \section{Introduction}
 
-Some of the most used such questionnaires are QUIS \cite{chin1988}, SUMI \cite{kirakowski1993}, CSUQ \cite{lewis1995}, and SUS \cite{brooke1996}.
+With the increased focus on developing products that have a high level of usability, it has become important to quantify the perceived usability of a product or system. Especially during usability studies, large or small, standardized questionnaires are being used widely for such measurement. Commonly used such questionnaires include the Questionnaire for User Interface Satisfaction (QUIS) \cite{chin1988}, the Software Usability Measurement Inventory (SUMI) \cite{kirakowski1993}, the Computer System Usability Questionnaires (CSUQ) \cite{lewis1995}, and the System Usability Scale (SUS) \cite{brooke1996}, among many others. Out of all usability questionnaires developed, SUS has received the highest level of adoption in both industry and academia, with hundreds of references in various publications alone.
 
-The SUS is used extensively to evaluate systems' usability and it is thus important that it provides accurate results. Since its introduction in 19XX, there have been critical advancement in the literature on questionnaire and question design regarding the identification of question biases and how to avoid them. As a matter of fact, the SUS is vulnerable to several well-known biases as a result of how the items and scale are constructed.
+The SUS was developed in 1986 by John Brooke while working at Digital Equipment Corporation in the UK. It was used as a “quick and dirty” scale to administer after usability studies on electronic office systems, such as the VT100, a text-based terminal system. SUS measures attitudes and perceptions regarding the effectiveness, efficiency, and satisfaction with a system (in accordance with the measures of usability defined in ISO 9241-11), yielding a single score to represent the global usability assessment for that system and to enable cross-system comparisons. To measure the system’s usability on these dimensions, SUS is comprised of ten statements (see \ref{tab:items} for their exact wording) which the respondent is asked to rate on a five-point Likert scale. The Likert scale, established by Rensis Likert in 1932, allows questionnaire respondents to specify their level of agreement or disagreement on a symmetric agreement scale for a series of statements \cite{likert1932}. SUS’ Likert scale ranges from “Strongly disagree” to “Strongly agree”, with only its endpoints labeled, while additionally all five scale items are numbered from 1 to 5. As already noted in Brooke’s initial work \cite{brooke1996}, the phrasing of the statement heavily influences the respondent’s level of agreement or disagreement for it. During the development of the SUS, statements that received the most extreme responses were selected. Finally, when analyzing the SUS responses, the individual responses are added up using a particular scheme. To ensure that this summation is possible, all items of the SUS need to be evaluated by the respondent.
 
-[Insert high-level summary of SUS]
+Over the years, SUS has been used across a variety of different systems, including hardware, software, websites, and applications. However, since the time of its development in 1986, research regarding questionnaire design has advanced significantly, with several insights that now challenge some of the foundations of the SUS. The remainder of this note will explain relevant advances in questionnaire design research, evaluate the original SUS in the context of those, propose an updated version to conform with these insights, and finally offer a comparison between the original and the updated SUS. Note that our intention is not to reduce the number of statements asked about in the SUS, contrary to recent work that attempts to create a shorter usability measure to save time \cite{lewis2013,finstad2010usability}. Our goal is to merely update the original questionnaire.
+
 
 
 \section{Related Work}
@@ -128,10 +142,10 @@ Participants of a massive open online course offered by Stanford University were
 
 \subsection{Psychometric Properties of the SUS}
 
-Table \ref{tab:dist} provides basic statistics that describe the distribution of the SUS scores.
+As the psychometric propoerties of the SUS have been studied extensively \cite{bangor2008,lewis2009factor,borsci2009dimensionality}, a brief evaluation of key statistics is sufficient for this paper. Table \ref{tab:dist} provides basic statistics that describe the distribution of the SUS scores.
 
 \subsubsection{Internal consistency}
-For the 439 responses to the original SUS, Cronbach's $\alpha$ is 0.86 and the correlation of each item with the total score lies between 0.53 and 0.81 with 95\% confidence. Although the SUS is frequently reported to have a higher coefficient alpha \cite{bangor2008,lewis2009factor}, an alpha of 0.86 reflects a high degree of interrelatedness.
+For the 439 responses to the original SUS, Cronbach's $\alpha$ is 0.86 and the correlation of each item with the total score lies between 0.53 and 0.81 with 95\% confidence. Although the SUS is frequently reported to have a higher coefficient alpha \cite{bangor2008,lewis2009factor,borsci2009dimensionality}, an alpha of 0.86 reflects a high degree of interrelatedness.
 <<eval=FALSE>>=
 alpha(m.orisus[,1:10])$total
 for(i in 1:10){
@@ -140,7 +154,8 @@ for(i in 1:10){
 @
 
 \subsubsection{Factor analysis}
-Lewis \& Sauro \cite{lewis2009factor} investigated the factor structure of the SUS and found two moderately correlated factors: Usability (items 2-4, 6-10) and Learnability (items 1, 5). A factor analysis of our 439 responses suggest that a single-factor solution is viable, even though two factors have eigenvalues greater than one. A scree plot (Figure \ref{fig:scree}) illustrates this result.
+%Lewis \& Sauro \cite{lewis2009factor} investigated the factor structure of the SUS and found two moderately correlated factors: Usability (items 2-4, 6-10) and Learnability (items 1, 5). 
+A factor analysis of our 439 responses suggest that a single-factor solution is viable, even though two factors have eigenvalues greater than one. A scree plot (Figure \ref{fig:scree}) illustrates this result.
 
 <<eval=FALSE>>=
 fa.parallel(m.orisus[,1:10])
@@ -149,7 +164,6 @@ fa(m.orisus[,1:10],1)$e.values
 @
 
 \subsection{Acquiescence Bias in SUS}
-
 A comparison of original SUS scores with scores from the reversed SUS provides strong evidence for acquiescence bias in the SUS. Without acquiescence bias, the average for each item on the original SUS would not be significantly different from the reverse-coded average for each item on the reversed SUS. However, if acquiescence bias exists, respondents would tend to agree with statements independent of the statement's tone, which would be reflected in a significant differenece between the original SUS average and reversed SUS reverse-coded average. 
 
 Table \ref{tab:acqui} provides means, standard deviations, and significance levels from Welch two-sample tests (which does not assume equal sample variances like the t-test). Given the much larger sample size of responses on system A than B, we observe more significant differences for comparisons for system A than B. Most notably, highly significant acquiescence bias at $p<0.05$ was found for 6 out of 10 items and the overall SUS score for system A. This result clearly shows that the SUS is significantly biased.
@@ -180,6 +194,26 @@ Table \ref{tab:acqui} provides means, standard deviations, and significance leve
 \bottomrule
 \end{tabular}
 \end{table}
+<<eval=FALSE>>=
+# testItems=function(i, oa, ra, ob, rb){
+#     print(paste(i, round(t.test(oa,ra)$p.value,3), round(t.test(ob,rb)$p.value,3), sep=", "))
+#     print(paste(i, paste(round(mean(oa),2), " (", round(sd(oa),2), ")", sep=""), paste(round(mean(ra),2), " (", round(sd(ra),2), ")", sep=""),
+#         paste(round(mean(ob),2), " (", round(sd(ob),2), ")", sep=""), paste(round(mean(rb),2), " (", round(sd(rb),2), ")", "\\", sep=""), sep=" & "))
+# }
+# for(i in 1:10){
+#     testItems(i, m.orisus[,i], m.revsus[,i], a.orisus[,i], a.revsus[,i])
+# }
+# testItems("all", rowMeans(m.orisus[,1:10]), rowMeans(m.revsus[,1:10]), rowMeans(a.orisus[,1:10]), rowMeans(a.revsus[,1:10]))
+
+testItems=function(i, oa, ra){
+    print(paste(i, round(mean(oa),2), round(sd(oa),2), round(mean(ra),2), round(sd(ra),2), round(t.test(oa,ra)$p.value,5), sep=" & "))
+}
+for(i in 1:10){
+    testItems(i, (2*m.orisus[,i]+2), (2*m.revsus[,i]+2))
+}
+testItems("all", convSUS(m.orisus[,1:10]), convSUS(m.revsus[,1:10]))
+
+@
 
 
 \section{SUS 2.0 Proposal}
@@ -210,26 +244,41 @@ fa(m.sus2[,1:5],1)$loadings
 [Introduce second data set]
 The two online courses were offered on two distinct online platforms that shared the same core features but differed considerably in design. Based on a design heuristic evaluation of the two systems, it was determined that B had more usability problems than A. [Need to talk about how this was evaluated. E.g. \url{http://en.wikipedia.org/wiki/Heuristic_evaluation}]
 
+Figure \ref{fig:sens} illustrates usability ratings using the original SUS and the short SUS 2.0 for two online course interfaces where one interface has an objectively higher usability level than the other. As the usability scores from both scales were not normally distributed, 95\% confidence intervals were computed from 10,000 bootstrap replicates using the adjusted bootstrap percentile method. While the original SUS is not sensitive enough to differentiate the usability of the two interfaces with 95\% confidence, the short SUS 2.0 exhibits good sensitivity. A non-parametric Wilcoxon rank sum test for each scale supports this result ($W$=18585 and $p$=0.07 for the original SUS, and $W$=74598 and $p\textless$0.001 for the short SUS 2.0)
 <<eval=FALSE>>=
-# testItems=function(i, oa, ra, ob, rb){
-#     print(paste(i, round(t.test(oa,ra)$p.value,3), round(t.test(ob,rb)$p.value,3), sep=", "))
-#     print(paste(i, paste(round(mean(oa),2), " (", round(sd(oa),2), ")", sep=""), paste(round(mean(ra),2), " (", round(sd(ra),2), ")", sep=""),
-#         paste(round(mean(ob),2), " (", round(sd(ob),2), ")", sep=""), paste(round(mean(rb),2), " (", round(sd(rb),2), ")", "\\", sep=""), sep=" & "))
-# }
-# for(i in 1:10){
-#     testItems(i, m.orisus[,i], m.revsus[,i], a.orisus[,i], a.revsus[,i])
-# }
-# testItems("all", rowMeans(m.orisus[,1:10]), rowMeans(m.revsus[,1:10]), rowMeans(a.orisus[,1:10]), rowMeans(a.revsus[,1:10]))
-
-testItems=function(i, oa, ra){
-    print(paste(i, round(mean(oa),2), round(sd(oa),2), round(mean(ra),2), round(sd(ra),2), round(t.test(oa,ra)$p.value,5), sep=" & "))
-}
-for(i in 1:10){
-    testItems(i, (2*m.orisus[,i]+2), (2*m.revsus[,i]+2))
-}
-testItems("all", convSUS(m.orisus[,1:10]), convSUS(m.revsus[,1:10]))
-
+wilcox.test(convSUS(m.orisus[,1:10]), convSUS(a.orisus[,1:10]))
+wilcox.test(convSUS(m.sus2[,2:5]), convSUS(a.sus2[,2:5]))
 @
+
+<<sens, fig.height=3.5, fig.width=4, fig.cap='Evaluation of scale sensitivity for original SUS and SUS 2.0 showing that the SUS 2.0 has high enough sensitivity to distinguish between a high and low usability system'>>=
+subMean = function(data, indices) {mean(data[indices])}
+m.oriBoot = boot(data=convSUS(m.orisus[,1:10]), statistic=subMean, R=10000)
+a.oriBoot = boot(data=convSUS(a.orisus[,1:10]), statistic=subMean, R=10000)
+m.sus2Boot = boot(data=rowMeans(m.sus2[,2:5]), statistic=subMean, R=10000)
+a.sus2Boot = boot(data=rowMeans(a.sus2[,2:5]), statistic=subMean, R=10000)
+
+# boot.ci(m.oriBoot, type="bca") # (83.21, 85.64 )  
+# boot.ci(a.oriBoot, type="bca") # (84.90, 89.29 ) 
+# boot.ci(m.sus2Boot, type="bca") # ( 3.404,  3.494 )
+# boot.ci(a.sus2Boot, type="bca") # ( 3.543,  3.702 )  
+
+sensDat=data.frame(
+    sus=c("\nOriginal SUS", "\nOriginal SUS", "\nShort SUS 2.0", "\nShort SUS 2.0"),
+    system=c("Low Usability System","High Usability System  ","Low Usability System","High Usability System  "),
+    score=c(m.oriBoot$t0, a.oriBoot$t0, m.sus2Boot$t0, a.sus2Boot$t0),
+    lwr=c(83.21, 84.90, 3.404, 3.543),
+    upr=c(85.64, 89.29, 3.494, 3.702))
+    
+ggplot(sensDat, aes(x=score, y=sus, xmin=lwr, xmax=upr, linetype=system)) +
+    geom_point(size=2) +
+    geom_errorbarh(height=.5) +
+    theme_bw() +
+    facet_wrap(~sus, scales="free", nrow=2) +
+    theme(legend.position="bottom", axis.text.y=element_blank(), axis.ticks.y=element_blank(), legend.key=element_blank(), strip.background=element_blank(), strip.text=element_text(face="bold"), legend.key.width=unit(1, "cm")) +
+    labs(x="Scores with 95% C.I.", y="", linetype="")
+@
+
+
 
 <<eval=FALSE>>=
 alpha(m.orisus[,1:10])
@@ -241,27 +290,9 @@ cor.test(difficulty,rowSums(ori_sus))
 cor.test(redo,rowSums(ori_sus))
 cor.test(learnsat,rowSums(ori_sus))
 
-# Original SUS
-# I needed to learn a lot of things before I could get going with this system
-# I think that I would need the support of a technical person to be able to use this system
-# I felt very confident using the system
-# I found the system very cumbersome to use
-# I would imagine that most people would learn to use this system very quickly
-# I found the system unnecessarily complex
-# I thought the system was easy to use
-# I found the various functions in this system were well integrated
-# I thought there was too much inconsistency in this system
-# I think that I would like to use this system frequently
 @
 
 <<eval=FALSE>>=
-# SUS 2.0
-# q1 How easy or difficult was it to learn how to use the system?
-# q2 How much more is there to learn about the system?
-# q3 How confident were you using the system?
-# q4 How easy or difficult is it to use the system?
-# q5 How consistent is the system?
-
 # Criterion 
 cor.test(oe,rowSums(sus2))
 cor.test(difficulty,rowSums(sus2))
@@ -290,44 +321,6 @@ eigen.loadings(eigen(cov(sus2, use="pair")))
 princomp(covmat=cov(sus2, use="pair"))$loadings
 plot(princomp(covmat=cov(sus2, use="pair")), type="lines")
 
-fa.parallel(sus2)
-
-
-# REV SUS
-# I needed to learn very few things before I could get going with this system
-# I think that I would not need any support of a technical person to be able to use this system
-# I did not feel very confident using the system
-# I found the system very manageable to use
-# I would imagine that most people would learn to use this system very slowly
-# I found the system appropriately simple
-# I thought the system was hard to use
-# I found the various functions in this system were not well integrated
-# I did not think there was too much inconsistency in this system
-# I do not think that I would like to use this system frequently
-
-
-alpha(rev_sus)
-fa.diagram(fa(rev_sus,1))
-fa.diagram(fa(rev_sus,2))
-
-
-# Original SUS
-# I needed to learn a lot of things before I could get going with this system
-# I think that I would need the support of a technical person to be able to use this system
-# I felt very confident using the system
-# I found the system very cumbersome to use
-# I would imagine that most people would learn to use this system very quickly
-# I found the system unnecessarily complex
-# I thought the system was easy to use
-# I found the various functions in this system were well integrated
-# I thought there was too much inconsistency in this system
-# I think that I would like to use this system frequently
-
-alpha(ori_sus)
-fa.diagram(fa(ori_sus,1))
-fa.diagram(fa(ori_sus,2))
-
-
 cor.test(oe,rowSums(ori_sus))
 cor.test(difficulty,rowSums(ori_sus))
 cor.test(redo,rowSums(ori_sus))
@@ -339,7 +332,7 @@ cor.test(learnsat,rowSums(ori_sus))
 \centering
 \caption{Items from the original and reversed SUS}
 \label{tab:items}
-\begin{tabular}{| r | p{8cm} | p{8cm} |}
+\begin{tabular}{| l | p{8cm} | p{8cm} |}
 \hline
 \textbf{\#}  & \textbf{Original SUS$^\ast$} & \textbf{Reversed SUS$^\ast$}\\
 \hline
@@ -365,7 +358,7 @@ cor.test(learnsat,rowSums(ori_sus))
 \centering
 \caption{Items from the proposed SUS 2.0 with answer scales}
 \label{tab:sus2items}
-\begin{tabular}{| r | p{7cm} | p{9cm} |}
+\begin{tabular}{| l | p{7cm} | p{9cm} |}
 \hline
 \textbf{\#}  & \textbf{Questions} & \textbf{Answer Scales} \\
 \hline
@@ -381,15 +374,11 @@ cor.test(learnsat,rowSums(ori_sus))
 10 & How much do you like or dislike the system? & \{Extremely, Moderately, Slightly\} dislike, Neither like nor dislike, \{Slightly, Moderately, Extremely\} like\\
 \hline
 \end{tabular}
+\smallskip
+\scriptsize{$^\ast$Items included in the Short SUS 2.0}
 \end{table*}
 
 <<eval=FALSE>>=
-convSUS = function(x) {
-    return(rowSums((x+1)*2))
-}
-convSUS2 = function(x) {
-    return(10*(as.matrix(m.sus2[,1:5]+1) %*% (c(5,5,7,7,5)/20))[,1])
-}
 length(convSUS(m.orisus[,1:10])); range(convSUS(m.orisus[,1:10])); mean(convSUS(m.orisus[,1:10])); sd(convSUS(m.orisus[,1:10])); median(convSUS(m.orisus[,1:10])); IQR(convSUS(m.orisus[,1:10]))
 length(convSUS(m.revsus[,1:10])); range(convSUS(m.revsus[,1:10])); mean(convSUS(m.revsus[,1:10])); sd(convSUS(m.revsus[,1:10])); median(convSUS(m.revsus[,1:10])); IQR(convSUS(m.revsus[,1:10]))
 length(convSUS2(m.sus2[,1:5])); range(convSUS2(m.sus2[,1:5])); mean(convSUS2(m.sus2[,1:5])); sd(convSUS2(m.sus2[,1:5])); median(convSUS2(m.sus2[,1:5])); IQR(convSUS2(m.sus2[,1:5]))
@@ -406,7 +395,7 @@ SUS & N & Min & Max & Mean & SD & Median & IQR\\
 \midrule
 Original   & 439 & 38 & 100 & 84.5 & 12.9 & 88 & 16\\
 Reversed   & 438 & 26 & 100 & 82.3 & 11.4 & 84 & 14\\
-2.0        & 869 & 24.5 & 84.5 & 69.7 & 10.4 & 71 & 13\\ 
+Short 2.0  & 869 & 24.5 & 84.5 & 69.7 & 10.4 & 71 & 13\\ 
 \bottomrule
 \end{tabular}
 \end{table}
@@ -416,8 +405,8 @@ Reversed   & 438 & 26 & 100 & 82.3 & 11.4 & 84 & 14\\
 scree=data.frame(
     n=c(1:10,1:5), 
     eig=c(fa(m.orisus[,1:10],1)$e.values, fa(m.sus2[,1:5],1)$e.values), 
-    sus=rep(c("Original SUS", "SUS 2.0"),c(10,5)))
-ggplot(scree, aes(factor(n), eig, group=sus, linetype=sus)) + geom_point() + geom_line()  + geom_hline(yintercept=1) + theme_bw() + labs(x="Factor Number", y="Eigenvalue") + ylim(0,4.5) + theme(legend.title=element_blank(), legend.background=element_blank(), legend.key=element_blank(), legend.key.width=unit(1.5,"cm"), legend.position=c(.7,.75))
+    sus=rep(c("Original SUS", "Short SUS 2.0"),c(10,5)))
+ggplot(scree, aes(factor(n), eig, group=sus, linetype=sus)) + geom_point() + geom_line()  + geom_hline(yintercept=1) + theme_bw() + labs(x="Factor Number", y="Eigenvalue") + ylim(0,4.5) + theme(legend.title=element_blank(), legend.background=element_blank(), legend.key=element_blank(), legend.key.width=unit(1.5,"cm"), legend.position=c(.65,.75))
 @
 
 \section{Discussion}
