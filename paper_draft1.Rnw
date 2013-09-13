@@ -144,7 +144,7 @@ Participants of a massive open online course offered by Stanford University were
 
 As the psychometric propoerties of the SUS have been studied extensively \cite{bangor2008,lewis2009factor,borsci2009dimensionality}, a brief evaluation of key statistics is sufficient for this paper. Table \ref{tab:dist} provides basic statistics that describe the distribution of the SUS scores.
 
-\begin{table}
+\begin{table}[b]
 \small
 \centering
 \caption{Statistical information on the SUS distributions (short SUS 2.0 scores scaled to 0-100 for comparison)}
@@ -240,8 +240,11 @@ testItems("all", convSUS(m.orisus[,1:10]), convSUS(m.revsus[,1:10]))
 
 \section{SUS 2.0 Proposal}
 
+Following the heuristic evaluation of the original SUS items, we propose an updated set of items that, at their core, are equivalent to the SUS, but reduce vulnerability to survey biases, like acquiescence bias. The first step was to change the questionnaire items from being statements to questions in an effort to reduce acquiescence bias. Moreover, statements that were phrased as hypotheticals, such as item 5 in Table \ref{tab:items}, were rephrased as concrete questions about the underlying construct.
 
-[Describe the proposal and refer to table with the updated questions. Mention that it was a non-goal to reduce the number of questions, etc.]
+The second step was to change the scale from an agree-disagree Likert scale to scales that reflect the relevant constructs, such as confidence, learnability, or complexity. Following question design research, unipolar scales were presented as 5-point scales, while bipolar scales were presented as 7-point scales.
+
+Our goal was to update the SUS items for future use given that the SUS is clearly the most established usability scale. These updated items with corresponding answer scales are presented in Table \ref{tab:sus2items}. For our evaluation of the SUS 2.0, we were unable to use the full 10 items and opted for using a reduced number of items which we refer to as the short SUS 2.0. The short SUS 2.0 consists of 5 items marked with asterisks in Table \ref{tab:sus2items} and covers the key facets of the SUS (leanability, confidence, ease of use, consistency).
 
 [We gotta talk about how this impacts the SUS score calculations, comparison to past scores, etc.]
 
@@ -277,8 +280,40 @@ fa(m.sus2[,1:5],1)$loadings
 @
 
 \subsection{Sensitivity of the SUS 2.0}
-A good usability scale should exhibit a high level of sensitivity to reflect subtle differences in usability. We conducted a second survey study to investigate how the SUS 2.0 compares to the original SUS in terms of sensitivity. 
-The two online courses were offered on two distinct online platforms that shared the same core features but differed considerably in design. Based on a design heuristic evaluation of the two systems, it was determined that B had more usability problems than A. [Need to talk about how this was evaluated. E.g. \url{http://en.wikipedia.org/wiki/Heuristic_evaluation}]
+A good usability scale should exhibit a high level of sensitivity to reflect subtle differences in usability. We conducted a second survey study in a post-course survey of an online course that ran on a different system (web interface) to investigate how the SUS 2.0 compares to the original SUS in terms of sensitivity.
+
+The two online courses that are compared were offered on two distinct online platforms that shared the same core features but differed considerably in design. Based on Nielsen's heuristic evaluation of the two systems, it was determined that one system had more usability problems than the other. The following criteria were used [go through these and say which ones were different/better etc.]
+
+Visibility of system status:
+%The system should always keep users informed about what is going on, through appropriate feedback within reasonable time.
+
+Match between system and the real world:
+%The system should speak the user's language, with words, phrases and concepts familiar to the user, rather than system-oriented terms. Follow real-world conventions, making information appear in a natural and logical order.
+
+User control and freedom:
+%Users often choose system functions by mistake and will need a clearly marked "emergency exit" to leave the unwanted state without having to go through an extended dialogue. Support undo and redo.
+
+Consistency and standards:
+%Users should not have to wonder whether different words, situations, or actions mean the same thing. Follow platform conventions.
+
+Error prevention:
+%Even better than good error messages is a careful design which prevents a problem from occurring in the first place. Either eliminate error-prone conditions or check for them and present users with a confirmation option before they commit to the action.
+
+Recognition rather than recall:
+%Minimize the user's memory load by making objects, actions, and options visible. The user should not have to remember information from one part of the dialogue to another. Instructions for use of the system should be visible or easily retrievable whenever appropriate.
+
+Flexibility and efficiency of use:
+%Accelerators—unseen by the novice user—may often speed up the interaction for the expert user such that the system can cater to both inexperienced and experienced users. Allow users to tailor frequent actions.
+
+Aesthetic and minimalist design:
+%Dialogues should not contain information which is irrelevant or rarely needed. Every extra unit of information in a dialogue competes with the relevant units of information and diminishes their relative visibility.
+
+Help users recognize, diagnose, and recover from errors:
+%Error messages should be expressed in plain language (no codes), precisely indicate the problem, and constructively suggest a solution.
+
+Help and documentation:
+%Even though it is better if the system can be used without documentation, it may be necessary to provide help and documentation. Any such information should be easy to search, focused on the user's task, list concrete steps to be carried out, and not be too large.
+
 
 Figure \ref{fig:sens} illustrates usability ratings using the original SUS and the short SUS 2.0 for two online course interfaces where one interface has an objectively higher usability level than the other. As the usability scores from both scales were not normally distributed, 95\% confidence intervals were computed from 10,000 bootstrap replicates using the adjusted bootstrap percentile method. While the original SUS is not sensitive enough to differentiate the usability of the two interfaces with 95\% confidence, the short SUS 2.0 exhibits good sensitivity. A non-parametric Wilcoxon rank sum test for each scale supports this result ($W$=18585 and $p$=0.07 for the original SUS, and $W$=74598 and $p\textless$0.001 for the short SUS 2.0).
 <<eval=FALSE>>=
@@ -315,49 +350,20 @@ ggplot(sensDat, aes(x=score, y=sus, xmin=lwr, xmax=upr, linetype=system)) +
 @
 
 
-
 <<eval=FALSE>>=
-cor.test(oe,rowSums(ori_sus))
-cor.test(difficulty,rowSums(ori_sus))
-cor.test(redo,rowSums(ori_sus))
-cor.test(learnsat,rowSums(ori_sus))
-
+length(convSUS(m.orisus[,1:10])); range(convSUS(m.orisus[,1:10])); mean(convSUS(m.orisus[,1:10])); sd(convSUS(m.orisus[,1:10])); median(convSUS(m.orisus[,1:10])); IQR(convSUS(m.orisus[,1:10]))
+length(convSUS(m.revsus[,1:10])); range(convSUS(m.revsus[,1:10])); mean(convSUS(m.revsus[,1:10])); sd(convSUS(m.revsus[,1:10])); median(convSUS(m.revsus[,1:10])); IQR(convSUS(m.revsus[,1:10]))
+length(convSUS2(m.sus2[,1:5])); range(convSUS2(m.sus2[,1:5])); mean(convSUS2(m.sus2[,1:5])); sd(convSUS2(m.sus2[,1:5])); median(convSUS2(m.sus2[,1:5])); IQR(convSUS2(m.sus2[,1:5]))
 @
 
-<<eval=FALSE>>=
-# Criterion 
-cor.test(oe,rowSums(sus2))
-cor.test(difficulty,rowSums(sus2))
-cor.test(redo,rowSums(sus2))
-cor.test(learnsat,rowSums(sus2))
 
-# Internal Consistency
-cor.test(rowSums(sus2), q1)
-cor.test(rowSums(sus2), q2)
-cor.test(rowSums(sus2), q3)
-cor.test(rowSums(sus2), q4)
-cor.test(rowSums(sus2), q5)
 
-# Cronbach's Alpha
-alpha(sus2)
+\section{Discussion}
 
-# Split Half Reliability
-rhh=cor(rowSums(cbind(q1,q3,q5), na.rm=T), rowSums(cbind(q2,q4), na.rm=T))
-(2*rhh)/(1+rhh)
+\section{Conclusion}
 
-# Factor Analysis
-plot(princomp(~q1+q2+q3+q4+q5, data=sus2, scores=T), type="lines")
-
-eigen(cov(sus2, use="pair"))
-eigen.loadings(eigen(cov(sus2, use="pair")))
-princomp(covmat=cov(sus2, use="pair"))$loadings
-plot(princomp(covmat=cov(sus2, use="pair")), type="lines")
-
-cor.test(oe,rowSums(ori_sus))
-cor.test(difficulty,rowSums(ori_sus))
-cor.test(redo,rowSums(ori_sus))
-cor.test(learnsat,rowSums(ori_sus))
-@
+\section{Acknowledgments}
+We are grateful to the instructors of the two Stanford courses who allowed us conduct survey experiments in their post-course surveys.
 
 \begin{table*}
 \small
@@ -409,22 +415,6 @@ cor.test(learnsat,rowSums(ori_sus))
 \smallskip
 \scriptsize{$^\ast$Items included in the Short SUS 2.0}
 \end{table*}
-
-<<eval=FALSE>>=
-length(convSUS(m.orisus[,1:10])); range(convSUS(m.orisus[,1:10])); mean(convSUS(m.orisus[,1:10])); sd(convSUS(m.orisus[,1:10])); median(convSUS(m.orisus[,1:10])); IQR(convSUS(m.orisus[,1:10]))
-length(convSUS(m.revsus[,1:10])); range(convSUS(m.revsus[,1:10])); mean(convSUS(m.revsus[,1:10])); sd(convSUS(m.revsus[,1:10])); median(convSUS(m.revsus[,1:10])); IQR(convSUS(m.revsus[,1:10]))
-length(convSUS2(m.sus2[,1:5])); range(convSUS2(m.sus2[,1:5])); mean(convSUS2(m.sus2[,1:5])); sd(convSUS2(m.sus2[,1:5])); median(convSUS2(m.sus2[,1:5])); IQR(convSUS2(m.sus2[,1:5]))
-@
-
-
-
-\section{Discussion}
-
-\section{Conclusion}
-
-\section{Acknowledgments}
-
-
 
 \bibliographystyle{acm-sigchi}
 \bibliography{suslit}
