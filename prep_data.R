@@ -190,27 +190,31 @@ cor(cbind(oe,difficulty,redo,learnsat), use="pair")
 # browser=browser[,1]
 # os=os[,1]
 # res=res[,1]
-
 names(dat)
+
+#How easy or difficult was it to learn how to use the system?
+dat$Q54
+# The scale for this question was displayed incorrectly! Cannot use it!
+
+#How much more is there to learn about the system?
+dat$Q56 #0=nothing at all, 4=a great deal
+q2=4-fac2num(dat$Q56[-1])
+
 #How confident were you using the system?
 dat$Q48 # 0=not at all confident, 4=extremely confident
 q3=fac2num(dat$Q48[-1])
-
-#How consistent is the system?
-dat$Q50 # 0=not at all consistent, 4=extremely consistent
-q5=fac2num(dat$Q50[-1])
 
 #How easy or difficult is it to use the system?
 dat$Q52 #0=extremely diff, 6=extremely easy
 q4=fac2num(dat$Q52[-1])
 
+#How consistent is the system?
+dat$Q50 # 0=not at all consistent, 4=extremely consistent
+q5=fac2num(dat$Q50[-1])
+
 #How likely are you to need support of a technical person to be able to use the system?
 dat$Q60 #0=extremely unlikely, 6=extremely likely
 q6=6-fac2num(dat$Q60[-1])
-
-#How easy or difficult was it to learn how to use the system?
-dat$Q54
-# The scale for this question was displayed incorrectly! Cannot use it!
 
 #How much did you like or dislike the system?
 dat$Q63 #0=extremely dislike, 6=extremely like
@@ -223,10 +227,6 @@ q8=4-fac2num(dat$Q64[-1])
 #How cumbersome is it to use the system?
 dat$Q65 #0=not at all cumbersome, 4=extremely cumbersome
 q9=4-fac2num(dat$Q65[-1])
-
-#How much more is there to learn about the system?
-dat$Q56 #0=nothing at all, 4=a great deal
-q2=4-fac2num(dat$Q56[-1])
 
 #How integrated were the system’s various functions?
 dat$Q61 #0=not at all integrated, 4=extremely integrated
