@@ -100,15 +100,15 @@ breaklinks=true,
 %     \affaddr{Stanford University}\\
 %     \email{kizilcec@stanford.edu}
 %   \alignauthor Hendrik M\"{u}ller\\
-%     \affaddr{UX Research}\\
-%     \affaddr{Google}\\
+%     \affaddr{User Experience Research}\\
+%     \affaddr{Google, Inc.}\\
 %     \email{hendrikm@google.com}
 % }
 
 \maketitle
 
 \begin{abstract}
-The System Usability Scale (SUS), first published in 1996, is probably the most widely employed measure of usability today. Numerous studies have assessed its psychometric properties and used it as a “gold standard” in the development of alternative scales. Recent advances in questionnaire design research on satisficing, acquiescence, and other biases, however, have led to the identification of deficiencies for the SUS. In this note, we review literature on relevant survey biases, inspect each SUS item for such biases, and using a survey experiment, show that the SUS is vulnerable to significant acquiescence bias. We then propose the SUS 2.0, an updated version of the SUS, which conforms with recent insights from questionnaire design research, and present its favorable psychometric properties. We present evidence from a second study that suggests that the SUS 2.0 is a more sensitive usability measure than the SUS. 
+The System Usability Scale (SUS), first published in 1996, is probably the most widely employed measure of usability today. Numerous studies have assessed its psychometric properties and used it as a “gold standard” in the development of alternative scales. Recent advances in questionnaire design research on satisficing, acquiescence, and other biases, however, now challenge some of the foundations of the SUS. In this note, we review literature on relevant survey biases, inspect each SUS item for such biases, and using a survey experiment, show that the SUS is vulnerable to significant acquiescence bias. We then propose the SUS 2.0, an updated version of the SUS with neutral questions, which conforms with recent insights from questionnaire design research, and present its favorable psychometric properties. We present evidence from a second study that suggests that the SUS 2.0 is a more sensitive usability measure than the SUS. 
 \end{abstract}
 
 \keywords{Usability, questionnaire, survey, System Usability Scale, SUS}

@@ -104,16 +104,16 @@ labAD = function(x, rev=0){
 revsus=subset(dat, select=Q75_2:Q75_15)
 revsus[1,]
 rev_sus=data.frame(
-	q1=labAD(revsus[,1]),
-	q2=labAD(revsus[,2]),
-	q3=labAD(revsus[,3],1),
-	q4=labAD(revsus[,4]),
-	q5=labAD(revsus[,5],1),
-	q6=labAD(revsus[,6]),
-	q7=labAD(revsus[,7],1),
-	q8=labAD(revsus[,8],1),
-	q9=labAD(revsus[,9]),
-	q10=labAD(revsus[,10],1))
+	q1=labAD(revsus[,10],1),
+	q2=labAD(revsus[,6]),
+	q3=labAD(revsus[,7],1),
+	q4=labAD(revsus[,2]),
+	q5=labAD(revsus[,8],1),
+	q6=labAD(revsus[,9]),
+	q7=labAD(revsus[,5],1),
+	q8=labAD(revsus[,4]),
+	q9=labAD(revsus[,3],1),
+	q10=labAD(revsus[,1]))
 
 rev_sus_all=data.frame(rev_sus, browser, os, res, oe, difficulty, redo, learnsat)[rowSums(is.na(rev_sus))==0,]
 write.csv(rev_sus_all, "rev_sus_medstat.csv", row.names=F)
@@ -135,16 +135,16 @@ write.csv(rev_sus_all, "rev_sus_medstat.csv", row.names=F)
 orisus=subset(dat, select=Q59_2:Q59_15)
 orisus[1,]
 ori_sus=data.frame(
-	q1=labAD(orisus[,1],1),
-	q2=labAD(orisus[,2],1),
-	q3=labAD(orisus[,3]),
-	q4=labAD(orisus[,4],1),
-	q5=labAD(orisus[,5]),
-	q6=labAD(orisus[,6],1),
-	q7=labAD(orisus[,7]),
-	q8=labAD(orisus[,8]),
-	q9=labAD(orisus[,9],1),
-	q10=labAD(orisus[,10]))
+	q1=labAD(orisus[,10]),
+	q2=labAD(orisus[,6],1),
+	q3=labAD(orisus[,7]),
+	q4=labAD(orisus[,2],1),
+	q5=labAD(orisus[,8]),
+	q6=labAD(orisus[,9],1),
+	q7=labAD(orisus[,5]),
+	q8=labAD(orisus[,4],1),
+	q9=labAD(orisus[,3]),
+	q10=labAD(orisus[,1],1))
 
 ori_sus_all=data.frame(ori_sus, browser, os, res, oe, difficulty, redo, learnsat)[rowSums(is.na(ori_sus))==0,]
 write.csv(ori_sus_all, "ori_sus_medstat.csv", row.names=F)
@@ -253,16 +253,16 @@ write.csv(sus2_all, "sus2_algo.csv", row.names=F)
 # I did not think there was too much inconsistency in this system
 # I do not think that I would like to use this system frequently
 rev_sus=data.frame(
-    q1=fac2num(dat$Q63_2[-1])-1,
-    q2=fac2num(dat$Q63_3[-1])-1,
-    q3=5-fac2num(dat$Q63_4[-1]),
-    q4=fac2num(dat$Q63_5[-1])-1,
-    q5=5-fac2num(dat$Q63_6[-1]),
-    q6=fac2num(dat$Q63_11[-1])-1,
-    q7=5-fac2num(dat$Q63_12[-1]),
-    q8=5-fac2num(dat$Q63_13[-1]),
-    q9=fac2num(dat$Q63_14[-1])-1,
-    q10=5-fac2num(dat$Q63_15[-1])
+    q1=5-fac2num(dat$Q63_15[-1]),
+    q2=fac2num(dat$Q63_11[-1])-1,
+    q3=5-fac2num(dat$Q63_12[-1]),
+    q4=fac2num(dat$Q63_3[-1])-1,
+    q5=5-fac2num(dat$Q63_13[-1]),
+    q6=fac2num(dat$Q63_14[-1])-1,
+    q7=5-fac2num(dat$Q63_6[-1]),
+    q8=fac2num(dat$Q63_5[-1])-1,
+    q9=5-fac2num(dat$Q63_4[-1]),
+    q10=fac2num(dat$Q63_2[-1])-1
 )
 
 rev_sus_all=data.frame(rev_sus, oe, difficulty, redo, learnsat)[rowSums(is.na(rev_sus))==0,]
@@ -282,16 +282,16 @@ write.csv(rev_sus_all, "rev_sus_algo.csv", row.names=F)
 # I thought there was too much inconsistency in this system
 # I think that I would like to use this system frequently
 orig_sus=data.frame(
-    q1=5-fac2num(dat$Q56_2[-1]),
-    q2=5-fac2num(dat$Q56_3[-1]),
-    q3=fac2num(dat$Q56_4[-1])-1,
-    q4=5-fac2num(dat$Q56_5[-1]),
-    q5=fac2num(dat$Q56_6[-1])-1,
+    q10=fac2num(dat$Q56_15[-1])-1,
     q6=5-fac2num(dat$Q56_11[-1]),
     q7=fac2num(dat$Q56_12[-1])-1,
+    q2=5-fac2num(dat$Q56_3[-1]),
     q8=fac2num(dat$Q56_13[-1])-1,
     q9=5-fac2num(dat$Q56_14[-1]),
-    q10=fac2num(dat$Q56_15[-1])-1
+    q5=fac2num(dat$Q56_6[-1])-1,
+    q4=5-fac2num(dat$Q56_5[-1]),
+    q3=fac2num(dat$Q56_4[-1])-1,
+    q1=5-fac2num(dat$Q56_2[-1])
 )
 
 orig_sus_all=data.frame(orig_sus, oe, difficulty, redo, learnsat)[rowSums(is.na(orig_sus))==0,]
