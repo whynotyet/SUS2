@@ -62,7 +62,7 @@ convSUS2 = function(x) {
 \hypersetup{
 pdftitle={Critiquing the System Usability Scale from a Questionnaire Design Perspective: Beware of Acquiescence Bias},
 pdfauthor={XXXXXXXXX REPLACE WITH AUTHOR NAMES XXXXXXXXXX},
-pdfkeywords={Usability, questionnaire, survey, System Usability Scale, SUS},
+pdfkeywords={System Usability Scale, SUS; response biases; usability evaluation; standardized questionnaires},
 bookmarksnumbered,
 pdfstartview={FitH},
 colorlinks,
@@ -157,9 +157,7 @@ The SUS' agreement scale is offered as a bipolar scale with 5 items. As agreemen
 \subsection{Experimental Evaluation of Acquiescence Bias}
 
 \subsubsection{Experiment setup}
-Participants of a massive open online course offered by Stanford University were asked to complete an optional post-course survey. The survey received 1746 responses. 
-%At the beginning of the survey respondents were asked to rate their overall experience with the course, their likelihood of taking another course with the same format, and the difficulty of the course. 
-Respondents were randomly assigned to one of three weighted groups: 25\% were presented with the (original) SUS (n=439), 25\% with the reversed SUS (n=438), and 50\% received an example of a more robust scale proposed in this note (n=869) (see Table \ref{tab:items} for scale details). The system that respondents were asked to evaluate comprised of the course sites for browsing and watching lecture videos. The rest of the survey was the same for all respondents and contained typical course assessment questions.
+Participants of a massive open online course offered by Stanford University were asked to complete an optional post-course survey. The survey received 1746 responses. Respondents were randomly assigned to one of three weighted groups: 25\% were presented with the (original) SUS (n=439), 25\% with the reversed SUS (n=438), and 50\% received an example of a more robust scale proposed in this note (n=869) (see Table \ref{tab:items} for scale details). The system that respondents were asked to evaluate comprised of the course sites for browsing and watching lecture videos. The rest of the survey was the same for all respondents and contained typical course assessment questions.
 
 \subsubsection{Psychometric Properties of the SUS}
 
@@ -192,39 +190,6 @@ length(convSUS(m.revsus[,1:10])); range(convSUS(m.revsus[,1:10])); mean(convSUS(
 length(convSUS2(m.sus2[,2:5])); range(convSUS2(m.sus2[,2:5])); mean(convSUS2(m.sus2[,2:5])); sd(convSUS2(m.sus2[,2:5])); median(convSUS2(m.sus2[,2:5])); IQR(convSUS2(m.sus2[,2:5])); alpha(m.sus2[,2:5])$total; fa(m.sus2[,2:5],1)$e.value
 @
 
-% We expect the  SUS to have high concurrent validity in the form of strong associations with related and weak associations with unrelated constructs. We find that the  SUS correlates weakly to moderately albeit significantly with the following related constructs: respondents' overall course experience ($r$=0.34, $t(437)$=8, $p\textless$0.001), and their likelihood to take another course with the same format ($r$=0.19, $t(437)$=4, $p\textless$0.001). However, there we find no significant association between the SUS and the perceived difficulty of the course ($r$=0.04, $t(437)$=0.9, p=0.4). [NEEDS MORE FRAMING. WHY IMPORTANT?]
-% <<eval=FALSE>>=
-% cor.test(m.orisus$oe,convSUS2(m.orisus[,1:10]))
-% cor.test(m.orisus$redo,convSUS2(m.orisus[,1:10]))
-% cor.test(m.orisus$learnsat,convSUS2(m.orisus[,1:10]))
-% cor.test(m.orisus$difficulty,convSUS2(m.orisus[,1:10]))
-% @
-% 
-% For the 439 responses to the SUS, Cronbach's $\alpha$ is 0.86 and the correlation of each item with the total score lies between 0.53 and 0.81 with 95\% confidence. Although the SUS is frequently reported to have a higher coefficient $\alpha$ \cite{bangor2008,lewis2009factor,borsci2009dimensionality}, an $\alpha$ of 0.86 reflects a good degree of interrelatedness.
-% <<eval=FALSE>>=
-% alpha(m.orisus[,1:10])$total
-% omega(m.orisus[,1:10], nfactors=2)
-% iclust(m.orisus[,1:10],nclusters=2)
-% for(i in 1:10){
-%     print(cor.test(convSUS2(m.orisus[,1:10]), m.orisus[,i])$conf[1:2])
-% }
-% @
-% 
-% A factor analysis of the 439 responses to the SUS suggests that the scale has a two-factor structure. A scree plot (Figure \ref{fig:scree}) illustrates that two factors have eigenvalues greater than one. This is consistent with previous work on the SUS factor structure \cite{lewis2009factor}.
-% <<eval=FALSE>>=
-% fa.parallel(m.orisus[,1:10])
-% scree(m.orisus[,1:10])
-% fa(m.orisus[,1:10],2)$e.values
-% fa.diagram(fa(m.orisus[,1:10],2))
-% @
-% <<scree, fig.width=4, fig.height=3, fig.cap='Scree plot for the SUS and short SUS 2.0 showing that the SUS has a two-factor structure, while the short SUS 2.0 has a single-factor structure'>>=
-% scree=data.frame(
-%     n=c(1:10,1:4), 
-%     eig=c(fa(m.orisus[,1:10],1)$e.values, fa(m.sus2[,2:5],1)$e.values), 
-%     sus=rep(c("Original SUS", "Short SUS 2.0"),c(10,4)))
-% ggplot(scree, aes(factor(n), eig, group=sus, linetype=sus)) + geom_point() + geom_line()  + geom_hline(yintercept=1) + theme_bw() + labs(x="Factor Number", y="Eigenvalue") + ylim(0,4.5) + theme(legend.title=element_blank(), legend.background=element_blank(), legend.key=element_blank(), legend.key.width=unit(1.5,"cm"), legend.position=c(.65,.75))
-% @
-
 \subsubsection{Acquiescence Bias Result}
 A comparison between scores from the original and reversed SUS provides strong evidence that the SUS induces acquiescence bias. Without acquiescence bias, the average for each item on the original SUS would not be significantly different from the reverse-coded average for each item on the reversed SUS. However, if acquiescence bias exists, respondents would tend to agree with statements independent of the statement's tone, which would be reflected in a significant difference between the original SUS average and reversed SUS reverse-coded average. 
 
@@ -253,13 +218,10 @@ Item \# & M & SD & M & SD & p value \\
 overall & 80.58 & 16.14 & 77.92 & 14.23 & \textless0.001\\
 \bottomrule
 \end{tabular}
-\caption{Means, standard deviations, and p values from Mann-Whitney tests for each item and the overall score of the original and reversed SUS providing strong evidence that the SUS induces acquiescence bias.}
+\caption{Original and reversed SUS scores providing strong evidence for acquiescence bias.}
 \label{tab:acqui}
 \end{table}
 <<eval=FALSE>>=
-# testItems=function(i, oa, ra){
-#     print(paste(i, round(mean(oa),2), round(sd(oa),2), round(mean(ra),2), round(sd(ra),2), round(t.test(oa,ra)$p.value,5), sep=" & "))
-# }
 testItems=function(i, oa, ra){
     print(paste(i, round(mean(oa),2), round(sd(oa),2), round(mean(ra),2), round(sd(ra),2), round(wilcox.test(oa,ra)$p.value,5), sep=" & "))
 }
@@ -267,55 +229,7 @@ for(i in 1:10){
     testItems(i, m.orisus[,i], m.revsus[,i])
 }
 testItems("all", convSUS(m.orisus[,1:10]), convSUS(m.revsus[,1:10]))
-
-# subMean = function(data, indices) {mean(data[indices])}
-# acDat=data.frame(item=rep(1:11, 2), sus=rep(c("Original SUS", "Reversed SUS"),each=11), est=NA, lwr=NA, upr=NA)
-# acDat$kind = ifelse(acDat$item==11, "Overall Score", "Individual Item")
-# 
-# for(i in 1:10){
-#     for(s in c("Original SUS", "Reversed SUS")){
-#         if(s=="Original SUS"){
-#             temp = boot(data=m.orisus[,i], statistic=subMean, R=10000)$t
-#         } else {
-#             temp = boot(data=m.revsus[,i], statistic=subMean, R=10000)$t
-#         }
-#      
-#         acDat[acDat$item==i & acDat$sus==s, "est"] = mean(temp)
-#         acDat[acDat$item==i & acDat$sus==s, "lwr"] = quantile(temp, 0.025)
-#         acDat[acDat$item==i & acDat$sus==s, "upr"] = quantile(temp, 0.975)
-#     }
-# }
-# temp = boot(data=convSUS(m.orisus[,1:10]), statistic=subMean, R=10000)
-# ci = boot.ci(temp, type="bca")$bca[4:5]
-# acDat[acDat$item==11 & acDat$sus=="Original SUS", "est"] = mean(temp$t)
-# acDat[acDat$item==11 & acDat$sus=="Original SUS", "lwr"] = ci[1]
-# acDat[acDat$item==11 & acDat$sus=="Original SUS", "upr"] = ci[2]
-# 
-# temp = boot(data=convSUS(m.revsus[,1:10]), statistic=subMean, R=10000)
-# ci = boot.ci(temp, type="bca")$bca[4:5]
-# acDat[acDat$item==11 & acDat$sus=="Reversed SUS", "est"] = mean(temp$t)
-# acDat[acDat$item==11 & acDat$sus=="Reversed SUS", "lwr"] = ci[1]
-# acDat[acDat$item==11 & acDat$sus=="Reversed SUS", "upr"] = ci[2]
-# 
-# acDat$item = ifelse(acDat$item==11, "all", acDat$item)
-#     
-# ggplot(acDat, aes(x=est, y=item, xmin=lwr, xmax=upr, linetype=sus)) +
-#     geom_point(size=2) +
-#     geom_errorbarh(height=.5) +
-#     theme_bw() +
-#     #scale_x_continuous(breaks=seq(0,100,2)) +
-#     facet_wrap(~kind, scales="free", ncol=1) +
-#     theme(legend.position="bottom", legend.key=element_blank(), strip.background=element_blank(), strip.text=element_text(face="bold"), legend.key.width=unit(1, "cm")) +
-#     labs(x="Scores with 95% C.I.", y="", linetype="")
 @
-
-<<eval=FALSE>>=
-temp=c()
-for(i in 1:10000) {temp=c(temp,wilcox.test(rowMeans(m.orisus[,c(3,8)]), sample(m.sus2[,3], 439))$p.value)}
-hist(temp)
-@
-
-
 \section{Alternative Proposal}
 
 Based on the review and evaluation of the original SUS presented above, this section now discusses a proposal for an alternative scale. While reasoning based on recent questionnaire design research is used to change the wording of the different SUS items as well as the response scales, an experiment discussed its quality and sensitivity as compared to SUS. 
@@ -339,77 +253,15 @@ The two systems offered the same basic features, i.e. browsing and playing video
 \subsubsection{Psychometric Properties of the Alternative Scale}
 
 This note does not provide a thorough evaluation of the proposed alternative scale. Instead, Table \ref{tab:dist} provides statistical and psychometric information from a subset of items of the alternative scale (items 3, 6, 9, 10) based on 869 responses for comparison with the SUS. Notably, the scales share similar distributional characteristics, but the alternative scale has lower reliability than the SUS and one rather than two-factor structure.
-% \subsubsection{Concurrent Validity}
-% Following the same procedure as for the SUS, we investigate the SUS 2.0's concurrent validity. We find that the short SUS 2.0 correlates moderately and significantly with respondents' overall course experience ($r$=0.31, $t(866)$=10, $p\textless$0.001) and their likelihood to take another course with the same format ($r$=0.21, $t(867)$=6, $p\textless$0.001); however, the short SUS 2.0 is only marginally associated with the perceived difficulty of the course ($r$=0.06, $t(867)$=1.7, p=0.08). [FRAMING!]
-% <<eval=FALSE>>=
-% cor.test(m.sus2$oe,rowSums(m.sus2[,2:5]))
-% cor.test(m.sus2$redo,rowSums(m.sus2[,2:5]))
-% cor.test(m.sus2$difficulty,rowSums(m.sus2[,2:5]))
-% @
-% 
-% \subsubsection{Internal consistency}
-% Cronbach's $\alpha$ for 869 responses to the short SUS 2.0 is 0.67 and individual item correlations with the total score vary between 0.54 and 0.84 with 95\% confidence. Coefficient $\alpha$ is smaller for the short SUS 2.0 than the SUS. However, given that coefficient $\alpha$ increases with the number of items, the ten-item SUS 2.0 is expected to have higher reliability than the four-item short SUS 2.0.
-% <<eval=FALSE>>=
-% alpha(m.sus2[,2:5])$total
-% alpha(a.sus2[,2:10])
-% scree(a.sus2[,2:10])
-% fa.diagram(fa(a.sus2[,2:10],2))
-% omega(m.orisus[,1:10],nfactors=2)
-% for(i in 1:5){
-%     print(cor.test(convSUS2(m.sus2[,2:5]), m.sus2[,i])$conf[1:2])
-% }
-% @
-% 
-% \subsubsection{Factor analysis}
-% A factor analysis of short SUS 2.0 responses suggests that a single-factor structure is most appropriate for the scale. As illustrated in the scree plot (Figure \ref{fig:scree}), only one factor has an eigenvalues greater than one and the slope changes considerably at the two factor point. A scree test of SUS items that correspond to those in the short SUS 2.0 (items 1, 3, 7, 9) also yields a single-factor solution. Hence, the factor structure of the ten-item SUS 2.0 will likely resemble that of the SUS.
-% <<eval=FALSE>>=
-% scree(m.orisus[,c(1,3,5,7,9)])
-% fa(m.sus2[,2:5],3)$loadings
-% fa(m.sus2[,2:5],2)$loadings
-% fa(m.sus2[,2:5],1)$loadings
-% @
 
 \subsubsection{Scale Sensitivity Result}
 
 A Mann-Whitney test of the difference between the usability ratings for the two systems for each scale suggests that one the alternative scale example is more sensitive than the SUS ($W$=18585, $p$=0.069 for the SUS; $W$=17744, $p$=0.014 for the alternative scale). This result is based on 439 usability ratings of the low-usability system and 96 of the high-usability system. Although this comparison uses relatively small sample sizes and only four items from the proposed alternative scale, this finding could point at further potential benefits of using a more robust scale than the SUS.
 
-%Figure \ref{fig:sens} illustrates usability ratings on the SUS and an example of the alternative scale for the high-usability and the low-usability system. As the usability scores from both scales were not normally distributed, 95\% confidence intervals were computed from 10,000 bootstrap replicates using the adjusted bootstrap percentile method.  While the SUS is not sensitive enough to differentiate the usability of the two interfaces with 95\% confidence, the alternative scale exhibits good sensitivity. 
 <<eval=FALSE>>=
-# wilcox.test(convSUS(rbind(m.orisus[,1:10],m.revsus[,1:10])), convSUS(rbind(a.orisus[,1:10],a.revsus[,1:10])), conf.int=T)
-# wilcox.test(rowSums(m.sus2[,2:5])/.18, rowSums(a.sus2[,2:5])/.18, conf.int=T)
-
 wilcox.test(convSUS(m.orisus[,1:10]), convSUS(a.orisus[,1:10]), conf.int=T)
 wilcox.test(sample(rowSums(m.sus2[,2:5])/.18,439), sample(rowSums(a.sus2[,2:5])/.18,96), conf.int=T)
 @
-% 
-% <<sens, fig.height=2.5, fig.width=4.5, fig.cap='Evaluation of scale sensitivity for the SUS and alternative scale showing that both are sensitive enough to distinguish between a high and low usability system'>>=
-% subMean = function(data, indices) {mean(data[indices])}
-% m.oriBoot = boot(data=convSUS(rbind(m.orisus[,1:10],m.revsus[,1:10])), statistic=subMean, R=10000)
-% a.oriBoot = boot(data=convSUS(rbind(a.orisus[,1:10],a.revsus[,1:10])), statistic=subMean, R=10000)
-% m.sus2Boot = boot(data=rowSums(m.sus2[,2:5])/.18, statistic=subMean, R=10000)
-% a.sus2Boot = boot(data=rowSums(a.sus2[,2:5])/.18, statistic=subMean, R=10000)
-% 
-% #  boot.ci(m.oriBoot, type="bca") # (78.21, 80.20 )  
-% #  boot.ci(a.oriBoot, type="bca") # (80.96, 85.11 )  
-% #  boot.ci(m.sus2Boot, type="bca") # (75.69, 77.63 )  
-% #  boot.ci(a.sus2Boot, type="bca") # (78.78, 82.33 )  
-% 
-% sensDat=data.frame(
-%     sus=c("SUS", "SUS", "Alternative\nScale", "Alternative\nScale"),
-%     system=c("Low-Usability System","High-Usability System  ","Low-Usability System","High-Usability System  "),
-%     score=c(m.oriBoot$t0, a.oriBoot$t0, m.sus2Boot$t0, a.sus2Boot$t0),
-%     lwr=c(78.21, 80.96, 75.69, 78.78),
-%     upr=c(80.20, 85.11, 77.63, 82.33))
-%     
-% ggplot(sensDat, aes(x=score, y=sus, xmin=lwr, xmax=upr, linetype=system)) +
-%     geom_point(size=2) +
-%     geom_errorbarh(height=.5) +
-%     theme_bw() +
-%     scale_x_continuous(breaks=seq(0,100,2)) +
-%     theme(legend.position="bottom", legend.key=element_blank(), strip.background=element_blank(), strip.text=element_text(face="bold"), legend.key.width=unit(1, "cm")) +
-%     labs(x="Scores with 95% C.I.", y="", linetype="")
-% @
-
 
 \section{Conclusion}
 
