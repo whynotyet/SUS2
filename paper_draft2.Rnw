@@ -1,0 +1,443 @@
+\documentclass{sigchi}
+
+\pagenumbering{arabic}
+
+<<setup, include=FALSE, cache=FALSE>>=
+opts_chunk$set(fig.path='plots/', fig.align='center', fig.show='asis', echo=FALSE, comment = "", message = FALSE, tidy=FALSE, dev='pdf', out.width="\\linewidth")
+options(replace.assign=TRUE)
+library(knitr)
+library(formatR)
+library(ggplot2)
+library(grid)
+library(boot)
+library(lsr)
+library(psych)
+setwd("~/Dropbox/r-code/SUS2/")
+m.sus2 = read.csv("sus2_medstat.csv")
+m.orisus = read.csv("ori_sus_medstat.csv")
+m.revsus = read.csv("rev_sus_medstat.csv")
+a.sus2 = read.csv("sus2_algo.csv")
+a.orisus = read.csv("ori_sus_algo.csv")
+a.revsus = read.csv("rev_sus_algo.csv")
+SE = function(x){
+    return(sqrt(var(x)/length(x)))
+}
+convSUS = function(x) {
+    return(rowSums((x)*2.5))
+}
+convSUS2 = function(x) {
+    return(rowSums(x)/.18)
+}
+@
+
+% Load basic packages
+\usepackage{balance}  % to better equalize the last page
+\usepackage{graphics} % for EPS, load graphicx instead
+%\usepackage{times}    % comment if you want LaTeX's default font
+\usepackage{url}      % llt: nicely formatted URLs
+\usepackage{booktabs}
+\usepackage{rotating}
+
+% llt: Define a global style for URLs, rather that the default one
+\makeatletter
+\def\url@leostyle{%
+  \@ifundefined{selectfont}{\def\UrlFont{\sf}}{\def\UrlFont{\small\bf\ttfamily}}}
+\makeatother
+\urlstyle{leo}
+
+
+% To make various LaTeX processors do the right thing with page size.
+\def\pprw{8.5in}
+\def\pprh{11in}
+\special{papersize=\pprw,\pprh}
+\setlength{\paperwidth}{\pprw}
+\setlength{\paperheight}{\pprh}
+\setlength{\pdfpagewidth}{\pprw}
+\setlength{\pdfpageheight}{\pprh}
+
+% Make sure hyperref comes last of your loaded packages, 
+% to give it a fighting chance of not being over-written, 
+% since its job is to redefine many LaTeX commands.
+\usepackage[pdftex]{hyperref}
+\hypersetup{
+pdftitle={Critiquing the System Usability Scale from a Questionnaire Design Perspective: Beware of Acquiescence Bias},
+pdfauthor={XXXXXXXXX REPLACE WITH AUTHOR NAMES XXXXXXXXXX},
+pdfkeywords={Usability, questionnaire, survey, System Usability Scale, SUS},
+bookmarksnumbered,
+pdfstartview={FitH},
+colorlinks,
+citecolor=black,
+filecolor=black,
+linkcolor=black,
+urlcolor=black,
+breaklinks=true,
+}
+
+% create a shortcut to typeset table headings
+\newcommand\tabhead[1]{\small\textbf{#1}}
+
+
+% End of preamble. Here it comes the document.
+\begin{document}
+
+\title{Critiquing the System Usability Scale from a Questionnaire Design Perspective: Beware of Acquiescence Bias}
+
+\numberofauthors{2}
+\author{
+    \alignauthor 1st Author Name\\
+    \affaddr{Affiliation}\\
+    \affaddr{Street}\\
+    \affaddr{City}\\
+    \email{E-mail address}
+    \alignauthor 2nd Author Name\\
+    \affaddr{Affiliation}\\
+    \affaddr{Street}\\
+    \affaddr{City}\\
+    \email{E-mail address}
+}
+% \author{
+%   \alignauthor Ren\'{e} F. Kizilcec\\
+%     \affaddr{Department of Communication}\\
+%     \affaddr{Stanford University}\\
+%     \email{kizilcec@stanford.edu}
+%   \alignauthor Hendrik M\"{u}ller\\
+%     \affaddr{User Experience Research}\\
+%     \affaddr{Google, Inc.}\\
+%     \email{hendrikm@google.com}
+% }
+
+\maketitle
+
+\begin{abstract}
+The System Usability Scale (SUS) is probably the most widely employed measure of usability today. Numerous studies have assessed its psychometric properties and used it as a ``gold standard" in the development of alternative scales. Recent advances in questionnaire design research on satisficing, acquiescence, and other biases, however, now challenge some of the foundations of the SUS. In this note, we review literature on relevant survey biases, inspect each SUS item for such biases, and using a survey experiment, show that the SUS is vulnerable to significant acquiescence bias. We then propose a more robust scale, rooted in the SUS, which conforms with recent insights from questionnaire design research, and provide an example of how the proposed scale outperforms the SUS in terms of measurement sensitivity.
+\end{abstract}
+
+\keywords{Usability, questionnaire, survey, System Usability Scale, SUS}
+
+\category{H.5.m.}{Information Interfaces and Presentation (e.g. HCI)}{Miscellaneous}
+
+
+\section{Introduction}
+
+With the increased focus on developing highly usable products, it has become highly important to actually measure the perceived usability of products or systems. Especially during usability studies, large or small, standardized questionnaires are being used widely for such measurement. Commonly used such questionnaires, in order of its first publication, include the Computer User Satisfaction Inventory (CUSI) \cite{kirakowski1987}, the Questionnaire for User Interface Satisfaction (QUIS) \cite{chin1988}, the After Scenario Questionnaire (ASQ) \cite{lewis1991}, the Software Usability Measurement Inventory (SUMI) \cite{kirakowski1993}, the Computer System Usability Questionnaires (CSUQ) \cite{lewis1995}, and the System Usability Scale (SUS) \cite{brooke1996}, among several others.
+
+Out of all usability measurement questionnaires, the SUS has received the highest level of adoption in both industry and academia, with hundreds of references across publications alone. The SUS is comprised of ten statements measured on a 5-point agreement scale, yielding a single score summarizing the usability assessment of the evaluated system. Over the years, the SUS has been used across a variety of different systems, including hardware, software, websites, applications, and even non-electronic products. However, since the time of its inception in 1986, research regarding the design of valid and reliable questionnaires has advanced significantly, with several insights that now challenge some of the foundations on which the SUS was developed. Most notably are research insights related to acquiescence bias \cite{smith1967,krosnickPresser2010,sarisKrosnickShaeffer2010}, its relationship to satisficing \cite{krosnick1991,krosnick1999}, and the use of scales with optimal lengths \cite{krosnickFabrigar1997, groves2004}.
+
+The remainder of this note outlines such advances in questionnaire design research relevant to the original SUS, review the SUS in the context of those, propose an alternative version to conform with these insights, and finally compare the original SUS to the proposed alternative. Note that this note's intention is not to reduce the number of statements asked about in the SUS (as attempted by others \cite{finstad2010,lewis2013}), nor the identification and hence elimination of biases that do not relate to acquiescence. Instead, the goal of this note is to critique the wording of the statements and response options of the SUS on theoretical grounds with empirical evidence and propose an alternative scale.
+
+
+\section{Related Work}
+
+Even though first published in 1996, the SUS was developed in 1986 by John Brooke while working at Digital Equipment Corporation (DEC) in the UK. It was used as a ``quick and dirty" scale to be administered after usability studies on electronic office systems, such as DEC's VT100, a text-based terminal system. The SUS measures attitudes and perceptions regarding the effectiveness, efficiency, and satisfaction with a system (in accordance with the measures of usability defined in ISO 9241-11). To measure a system's usability on these dimensions, the SUS is comprised of ten statements (see \ref{tab:items} for their exact wording) which the respondent is asked to rate individually. The SUS uses a Likert scale, established by Rensis Likert in 1932 \cite{likert1932}, which allows questionnaire respondents to specify their level of agreement or disagreement with each of the statements on a symmetric five-point agreement scale, ranging from ``Strongly disagree" to ``Strongly agree" (see Figure \ref{fig:originalScale}). Note that only its endpoints are labeled, while additionally all five scale items numbered from 1 to 5. As already noted in Brooke's initial work \cite{brooke1996}, the phrasing of the statement strongly influences the expressed level of agreement; hence, during the development of the SUS, statements that received the most extreme responses were selected. When analyzing responses to the SUS, the individual responses are consolidated into a single score to represent the global usability assessment for that system and to enable cross-system comparisons. To ensure that this summation is possible, all items of the SUS need to be evaluated by each respondent.
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=.9\columnwidth]{originalScale.png}
+\caption{5-point agreement scale as used in the SUS}
+\label{fig:originalScale}
+\end{figure}
+
+One of the questionnaire biases that has been researched thoroughly is that of acquiescence bias, the insight from which are also highly relevant to the SUS. Acquiescence bias is the tendency of a respondent to be more likely to agree with a given statement independent of its substance \cite{smith1967}. Several aspects of questionnaire design contribute to the likelihood for acquiescence bias when responding to a questionnaire. First, when given a non-neutral statement, respondents are more likely to think of reasons why the statement is true, rather than expending cognitive effort to consider reasons for disagreement. This form of shortcutting the question answer process is often referred to as satisficing \cite{krosnick1991}. Second, respondents with lower self-perceived status assume the questionnaire administrator agrees with the posed statement, resulting in deferential agreement bias \cite{sarisKrosnickShaeffer2010}. Similarly, respondents whose personality naturally skews towards agreeableness are more likely to suffer from acquiescence bias \cite{sarisKrosnickShaeffer2010}. Finally, if the respondent's cognitive ability or motivation is lower, acquiescence bias is more likely \cite{krosnickNarayanSmith1996}.
+
+Acquiescence bias is the strongest when presented with binary agree/disagree, yes/no, or true/false answer options \cite{smith1967}; however, similar effects have been shown for agreement scales (such as the Likert scale) \cite{sarisKrosnickShaeffer2010}. To minimize this bias, research has proposed to refer to the underlying construct in a neutral, non-leading question and offer a neutral scale, instead of using statements with agreement scales \cite{sarisKrosnickShaeffer2010}. Another suggestion to minimize this bias has been to use reverse-keyed constructs, i.e., the same construct is asked positively and negatively in the same survey, the raw scores of which are then combined to correct for acquiescence bias. 
+
+Picking the most valid and reliable rating scale for a given question has been another heavily researched topic, especially when moving away from agreement scales. First, research has shown that scale points that are fully labeled as compared to those that just use numbers optimize reliability and minimize bias \cite{groves2004}. Second, the scale length and its items depends on the nature of the construct being measured, i.e., if the construct is unipolar or bipolar in nature. Unipolar constructs range from zero to an extreme amount and are best measured on a 5-point scale, optimizing reliability while minimizing respondent burden \cite{krosnickFabrigar1997}. Bipolar constructs, on the other hand, range from an extreme negative to an extreme positive with a natural midpoint, which are best measured with a 7-point rating scale to maximize reliability and data differentiation \cite{krosnickFabrigar1997}.
+
+
+\section{Acquiescence in the SUS}
+
+In this section, we inspect the original SUS for weaknesses in regards to acquiescence bias, based on questionnaire design research insights mentioned in the previous section. It also describes an experimental evaluation to identify the effects of acquiescence bias in the SUS. The item numbers of the SUS referred to in the remainder of this note correspond to those in Table \ref{tab:items}.
+\subsection{Heuristic review}
+
+Each of the ten items of the SUS is constructed of a non-neutral statement and an agreement scale. In accordance with questionnaire design research \cite{smith1967}, this particular design encourages the effects of acquiescence bias, i.e., the likelihood for the respondents to simply agree with the statement provided. As an example, let's review item 3 of the SUS: ``I thought the system was easy to use." In this case, respondents are likely to expend unproportional effort on finding reasons that confirm that the system is actually easy to use, instead of thinking about aspects that would contribute to the system being interpreted as difficult to use. As a result, respondents are led towards a more agreeable response in line with ``easy to use" as expressed in the given statement. As another example, let's take a look at item 9 in the original SUS (``I felt very confident using the system"). This statement leads the respondent towards higher confidence, as that's what the statement suggests and since the agreement scale increases the likelihood to agree that the system actually made them feel confident. Additionally, the nature of the agreement scale leads respondents further towards agreement as disagreeing with anyone requires courage and cognitive effort \cite{sarisKrosnickShaeffer2010}. As the SUS is often administered at the end of usability studies, hence, not anonymously and with the questionnaire administrator present, this effect may be especially strong. As all other items of the SUS are phrased in the exact same way, this consideration applies equally across all of the SUS. 
+
+Notably, some of the items in the SUS have been reverse-keyed to ask about the same construct from opposite directions, as for example in items 3 (``easy to use") and 8 (``cumbersome to use"). This suggests that potential acquiescence bias effects may cancel each other out; however, this claim needs further evaluation. Nevertheless, this reverse-keyed approach is used only for a subset of the items in the SUS, hence, all other items (1, 2, 4, 5, 6, 7, 9, 10) continue to suffer from significant acquiescence biases overall. While some of the items (e.g., 4 and 10) are reasonably similar, they are still asking about a slightly different underlying constructs and cannot simply used to cancel out biases.
+
+The SUS' agreement scale is offered as a bipolar scale with 5 items. As agreement/disgreement is a bipolar scale in its nature, the most appropriate scale length should be 7 points, to maximize reliability and data differentiation \cite{krosnickFabrigar1997}. However, when transforming the current agreement scale into construct-specific, neutral scales, the different scales and their lengths then depend on the nature of the underlying construct being measured, i.e., if the construct is unipolar or bipolar in nature \cite{krosnickFabrigar1997}.
+
+\subsection{Experimental Evaluation of Acquiescence Bias}
+
+\subsubsection{Experiment setup}
+Participants of a massive open online course offered by Stanford University were asked to complete an optional post-course survey. The survey received 1746 responses. 
+%At the beginning of the survey respondents were asked to rate their overall experience with the course, their likelihood of taking another course with the same format, and the difficulty of the course. 
+Respondents were randomly assigned to one of three weighted groups: 25\% were presented with the (original) SUS (n=439), 25\% with the reversed SUS (n=438), and 50\% received an example of a more robust scale proposed in this note (n=869) (see Table \ref{tab:items} for scale details). The system that respondents were asked to evaluate comprised of the course sites for browsing and watching lecture videos. The rest of the survey was the same for all respondents and contained typical course assessment questions.
+
+
+\subsubsection{Psychometric Properties of the SUS}
+
+As the psychometric properties of the SUS have been studied extensively \cite{bangor2008,lewis2009factor,borsci2009dimensionality}, a brief evaluation of key statistics should be sufficient here. Table \ref{tab:dist} provides an overview of statistics and psychometric properties of the original and reversed SUS, and the more robust example scale. Although the SUS is frequently reported to have a higher coefficient $\alpha$ \cite{bangor2008,lewis2009factor,borsci2009dimensionality}, an $\alpha$ of 0.86 reflects a good level of internal consistency. Moreover, the factor analysis yields two eigenvalues greater than one, which is consistent with previous work on the SUS's factor structure \cite{lewis2009factor}. 
+
+\begin{table}[b]
+\small
+\centering
+\begin{tabular}{llll}
+\toprule
+          & Original & Reversed & Alternative\\
+Statistic & SUS      & SUS      & Scale$^\dagger$\\
+\midrule
+N     & 439 & 438 & 869\\
+Range & [23, 100] & [8, 100] & [22, 100]\\
+Mean  & 80.6 & 77.9 & 76.7\\
+SD    & 16.1 & 14.2 & 14.7\\
+Median& 85 & 80 & 78\\
+IQR   & 20 & 18 & 22\\
+Cronbach $\alpha$ & 0.86 & 0.73 & 0.67\\
+$\left\vert{\lambda}>1\right\vert^{\ast}$ & 2 & 2 & 1\\
+\bottomrule
+\multicolumn{4}{l}{\scriptsize{$^{\ast}$number of eigenvalues greater than 1 in factor analysis}}\\
+\multicolumn{4}{l}{\scriptsize{$^{\dagger}$proposed alternative items 3, 6, 9, 10 from Table \ref{tab:items}}}\\
+\end{tabular}
+\caption{Statistical and psychometric scale properties.}
+\label{tab:dist}
+\end{table}
+<<eval=FALSE>>=
+length(convSUS(m.orisus[,1:10])); range(convSUS(m.orisus[,1:10])); mean(convSUS(m.orisus[,1:10])); sd(convSUS(m.orisus[,1:10])); median(convSUS(m.orisus[,1:10])); IQR(convSUS(m.orisus[,1:10])); alpha(m.orisus[,1:10])$total; fa(m.orisus[,1:10],1)$e.value
+length(convSUS(m.revsus[,1:10])); range(convSUS(m.revsus[,1:10])); mean(convSUS(m.revsus[,1:10])); sd(convSUS(m.revsus[,1:10])); median(convSUS(m.revsus[,1:10])); IQR(convSUS(m.revsus[,1:10])); alpha(m.revsus[,1:10])$total; fa(m.revsus[,1:10],1)$e.value
+length(convSUS2(m.sus2[,2:5])); range(convSUS2(m.sus2[,2:5])); mean(convSUS2(m.sus2[,2:5])); sd(convSUS2(m.sus2[,2:5])); median(convSUS2(m.sus2[,2:5])); IQR(convSUS2(m.sus2[,2:5])); alpha(m.sus2[,2:5])$total; fa(m.sus2[,2:5],1)$e.value
+@
+
+% We expect the  SUS to have high concurrent validity in the form of strong associations with related and weak associations with unrelated constructs. We find that the  SUS correlates weakly to moderately albeit significantly with the following related constructs: respondents' overall course experience ($r$=0.34, $t(437)$=8, $p\textless$0.001), and their likelihood to take another course with the same format ($r$=0.19, $t(437)$=4, $p\textless$0.001). However, there we find no significant association between the SUS and the perceived difficulty of the course ($r$=0.04, $t(437)$=0.9, p=0.4). [NEEDS MORE FRAMING. WHY IMPORTANT?]
+% <<eval=FALSE>>=
+% cor.test(m.orisus$oe,convSUS2(m.orisus[,1:10]))
+% cor.test(m.orisus$redo,convSUS2(m.orisus[,1:10]))
+% cor.test(m.orisus$learnsat,convSUS2(m.orisus[,1:10]))
+% cor.test(m.orisus$difficulty,convSUS2(m.orisus[,1:10]))
+% @
+% 
+% For the 439 responses to the SUS, Cronbach's $\alpha$ is 0.86 and the correlation of each item with the total score lies between 0.53 and 0.81 with 95\% confidence. Although the SUS is frequently reported to have a higher coefficient $\alpha$ \cite{bangor2008,lewis2009factor,borsci2009dimensionality}, an $\alpha$ of 0.86 reflects a good degree of interrelatedness.
+% <<eval=FALSE>>=
+% alpha(m.orisus[,1:10])$total
+% omega(m.orisus[,1:10], nfactors=2)
+% iclust(m.orisus[,1:10],nclusters=2)
+% for(i in 1:10){
+%     print(cor.test(convSUS2(m.orisus[,1:10]), m.orisus[,i])$conf[1:2])
+% }
+% @
+% 
+% A factor analysis of the 439 responses to the SUS suggests that the scale has a two-factor structure. A scree plot (Figure \ref{fig:scree}) illustrates that two factors have eigenvalues greater than one. This is consistent with previous work on the SUS factor structure \cite{lewis2009factor}.
+% <<eval=FALSE>>=
+% fa.parallel(m.orisus[,1:10])
+% scree(m.orisus[,1:10])
+% fa(m.orisus[,1:10],2)$e.values
+% fa.diagram(fa(m.orisus[,1:10],2))
+% @
+% <<scree, fig.width=4, fig.height=3, fig.cap='Scree plot for the SUS and short SUS 2.0 showing that the SUS has a two-factor structure, while the short SUS 2.0 has a single-factor structure'>>=
+% scree=data.frame(
+%     n=c(1:10,1:4), 
+%     eig=c(fa(m.orisus[,1:10],1)$e.values, fa(m.sus2[,2:5],1)$e.values), 
+%     sus=rep(c("Original SUS", "Short SUS 2.0"),c(10,4)))
+% ggplot(scree, aes(factor(n), eig, group=sus, linetype=sus)) + geom_point() + geom_line()  + geom_hline(yintercept=1) + theme_bw() + labs(x="Factor Number", y="Eigenvalue") + ylim(0,4.5) + theme(legend.title=element_blank(), legend.background=element_blank(), legend.key=element_blank(), legend.key.width=unit(1.5,"cm"), legend.position=c(.65,.75))
+% @
+
+\subsubsection{Acquiescence Bias Conclusion}
+A comparison between scores from the original and reversed SUS provides strong evidence that the SUS induces acquiescence bias. Without acquiescence bias, the average for each item on the original SUS would not be significantly different from the reverse-coded average for each item on the reversed SUS. However, if acquiescence bias exists, respondents would tend to agree with statements independent of the statement's tone, which would be reflected in a significant difference between the original SUS average and reversed SUS reverse-coded average. 
+
+Table \ref{tab:acqui} provides means, standard deviations, and p-values from non-parametric Mann-Whitney tests of the hypothesis that there is no location shift (a non-parametric alternative of the t-test is used as scores are not normally distributed). We find highly significant differences with at least 99\% confidence in all but two items and the overall SUS score. This is very strong evidence for the claim that the original SUS induces acquiescence bias.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{rccccr}
+\toprule
+ & \multicolumn{2}{c}{Original} & \multicolumn{2}{c}{Reversed} \\
+\cmidrule(r){2-3} \cmidrule(r){4-5}
+Item \# & M & SD & M & SD & p value \\
+\midrule
+1 & 3.09 & 0.90 & 3.21 & 1 & 0.002\\
+2 & 3.28 & 1.06 & 3.23 & 0.86 & 0.006\\
+3 & 3.30 & 0.84 & 3.45 & 0.89 & \textless0.001\\
+4 & 3.54 & 0.92 & 3.08 & 1.23 & \textless0.001\\
+5 & 3.00 & 0.92 & 3.10 & 1.01 & 0.013\\
+6 & 3.26 & 1.02 & 2.89 & 1.14 & \textless0.001\\
+7 & 3.12 & 0.90 & 3.09 & 0.95 & 0.868\\
+8 & 3.10 & 1.18 & 3.33 & 0.84 & 0.173\\
+9 & 3.29 & 0.89 & 3.45 & 0.91 & \textless0.001\\
+10 & 3.26 & 1.06 & 2.35 & 1.49 & \textless0.001\\
+\midrule
+overall & 80.58 & 16.14 & 77.92 & 14.23 & \textless0.001\\
+\bottomrule
+\end{tabular}
+\caption{Means, standard deviations, and p values from Mann-Whitney tests for each item and the overall score of the original and reversed SUS providing strong evidence that the SUS induces acquiescence bias.}
+\label{tab:acqui}
+\end{table}
+<<eval=FALSE>>=
+# testItems=function(i, oa, ra){
+#     print(paste(i, round(mean(oa),2), round(sd(oa),2), round(mean(ra),2), round(sd(ra),2), round(t.test(oa,ra)$p.value,5), sep=" & "))
+# }
+testItems=function(i, oa, ra){
+    print(paste(i, round(mean(oa),2), round(sd(oa),2), round(mean(ra),2), round(sd(ra),2), round(wilcox.test(oa,ra)$p.value,5), sep=" & "))
+}
+for(i in 1:10){
+    testItems(i, m.orisus[,i], m.revsus[,i])
+}
+testItems("all", convSUS(m.orisus[,1:10]), convSUS(m.revsus[,1:10]))
+
+# subMean = function(data, indices) {mean(data[indices])}
+# acDat=data.frame(item=rep(1:11, 2), sus=rep(c("Original SUS", "Reversed SUS"),each=11), est=NA, lwr=NA, upr=NA)
+# acDat$kind = ifelse(acDat$item==11, "Overall Score", "Individual Item")
+# 
+# for(i in 1:10){
+#     for(s in c("Original SUS", "Reversed SUS")){
+#         if(s=="Original SUS"){
+#             temp = boot(data=m.orisus[,i], statistic=subMean, R=10000)$t
+#         } else {
+#             temp = boot(data=m.revsus[,i], statistic=subMean, R=10000)$t
+#         }
+#      
+#         acDat[acDat$item==i & acDat$sus==s, "est"] = mean(temp)
+#         acDat[acDat$item==i & acDat$sus==s, "lwr"] = quantile(temp, 0.025)
+#         acDat[acDat$item==i & acDat$sus==s, "upr"] = quantile(temp, 0.975)
+#     }
+# }
+# temp = boot(data=convSUS(m.orisus[,1:10]), statistic=subMean, R=10000)
+# ci = boot.ci(temp, type="bca")$bca[4:5]
+# acDat[acDat$item==11 & acDat$sus=="Original SUS", "est"] = mean(temp$t)
+# acDat[acDat$item==11 & acDat$sus=="Original SUS", "lwr"] = ci[1]
+# acDat[acDat$item==11 & acDat$sus=="Original SUS", "upr"] = ci[2]
+# 
+# temp = boot(data=convSUS(m.revsus[,1:10]), statistic=subMean, R=10000)
+# ci = boot.ci(temp, type="bca")$bca[4:5]
+# acDat[acDat$item==11 & acDat$sus=="Reversed SUS", "est"] = mean(temp$t)
+# acDat[acDat$item==11 & acDat$sus=="Reversed SUS", "lwr"] = ci[1]
+# acDat[acDat$item==11 & acDat$sus=="Reversed SUS", "upr"] = ci[2]
+# 
+# acDat$item = ifelse(acDat$item==11, "all", acDat$item)
+#     
+# ggplot(acDat, aes(x=est, y=item, xmin=lwr, xmax=upr, linetype=sus)) +
+#     geom_point(size=2) +
+#     geom_errorbarh(height=.5) +
+#     theme_bw() +
+#     #scale_x_continuous(breaks=seq(0,100,2)) +
+#     facet_wrap(~kind, scales="free", ncol=1) +
+#     theme(legend.position="bottom", legend.key=element_blank(), strip.background=element_blank(), strip.text=element_text(face="bold"), legend.key.width=unit(1, "cm")) +
+#     labs(x="Scores with 95% C.I.", y="", linetype="")
+
+@
+
+
+\section{Alternative Scale Proposal}
+
+In light of the SUS's deficiencies uncovered in the previous section, we propose an updated set of items that, at their core, are equivalent to the SUS, but reduce vulnerability to survey biases, like acquiescence bias, satisficing, and hypothetical projections. The first step was to change the questionnaire items from being statements to questions in an effort to reduce acquiescence bias. Moreover, statements that were phrased as hypotheticals, such as item \#7 in Table \ref{tab:items}, were rephrased as concrete questions about the underlying construct referring back to the system that was just used by the respondent.
+
+The second step was to change the scale from a Likert agreement scale to scales that reflect the relevant construct, such as ease/difficulty (item X), confidence (item X), learnability (item X), or complexity (item X). Following recommendations from question design research \cite{krosnickFabrigar1997}, unipolar constructs were presented as five-point scales, while bipolar constructs were presented as seven-point scales.
+
+Our goal was to update the SUS items instead of creating a new measure, given that the SUS is probably the most established usability scale. These updated items with corresponding answer scales are presented in Table \ref{tab:items}. For our evaluation of the SUS 2.0, we were unable to use all ten items and opted for using a reduced number of items which we refer to as the short SUS 2.0. The short SUS 2.0 consists of four items marked with asterisks in Table \ref{tab:items} and covers the key dimensions of the SUS (confidence, ease of use, consistency, learnability).
+
+The score calculation for the SUS 2.0 is different to that of the SUS, because the SUS 2.0 consists of six items with 5-point unipolar answer scales and four items with 7-point bipolar answer scales, instead of ten items on a 5-point scale. To calculate the SUS 2.0 score, first assign values between 0 -- 4 or 0 -- 6 depending on the number of scale points such that 0 reflects the worse usability response and 4 or 6 the best. Second, sum up the values for all ten responses to obtain an integer between 0 -- 48. Third, divide by 0.48 to obtain the SUS 2.0 score. For the short SUS 2.0, follow the same steps except that the sum of response values lies between 0 -- 18 and is divided by 0.18. In contrast to the SUS, non-responses are permitted, albeit not encouraged, in the SUS 2.0 and are accounted for by adjusting the denominator accordingly.
+
+
+\subsection{Psychometric Properties of Alternative Scale}
+
+This note does not provide a thorough evaluation of the proposed alternative scale. Instead, Table \ref{tab:dist} provides statistical and psychometric information from a subset of items of the alternative scale (items 3, 6, 9, 10) based on 869 responses for comparison with the SUS. Notably, the scales share similar distributional characteristics, but the alternative scale has lower reliability than the SUS and one rather than two-factor structure.
+
+% \subsubsection{Concurrent Validity}
+% Following the same procedure as for the SUS, we investigate the SUS 2.0's concurrent validity. We find that the short SUS 2.0 correlates moderately and significantly with respondents' overall course experience ($r$=0.31, $t(866)$=10, $p\textless$0.001) and their likelihood to take another course with the same format ($r$=0.21, $t(867)$=6, $p\textless$0.001); however, the short SUS 2.0 is only marginally associated with the perceived difficulty of the course ($r$=0.06, $t(867)$=1.7, p=0.08). [FRAMING!]
+% <<eval=FALSE>>=
+% cor.test(m.sus2$oe,rowSums(m.sus2[,2:5]))
+% cor.test(m.sus2$redo,rowSums(m.sus2[,2:5]))
+% cor.test(m.sus2$difficulty,rowSums(m.sus2[,2:5]))
+% @
+% 
+% \subsubsection{Internal consistency}
+% Cronbach's $\alpha$ for 869 responses to the short SUS 2.0 is 0.67 and individual item correlations with the total score vary between 0.54 and 0.84 with 95\% confidence. Coefficient $\alpha$ is smaller for the short SUS 2.0 than the SUS. However, given that coefficient $\alpha$ increases with the number of items, the ten-item SUS 2.0 is expected to have higher reliability than the four-item short SUS 2.0.
+% <<eval=FALSE>>=
+% alpha(m.sus2[,2:5])$total
+% alpha(a.sus2[,2:10])
+% scree(a.sus2[,2:10])
+% fa.diagram(fa(a.sus2[,2:10],2))
+% omega(m.orisus[,1:10],nfactors=2)
+% for(i in 1:5){
+%     print(cor.test(convSUS2(m.sus2[,2:5]), m.sus2[,i])$conf[1:2])
+% }
+% @
+% 
+% \subsubsection{Factor analysis}
+% A factor analysis of short SUS 2.0 responses suggests that a single-factor structure is most appropriate for the scale. As illustrated in the scree plot (Figure \ref{fig:scree}), only one factor has an eigenvalues greater than one and the slope changes considerably at the two factor point. A scree test of SUS items that correspond to those in the short SUS 2.0 (items 1, 3, 7, 9) also yields a single-factor solution. Hence, the factor structure of the ten-item SUS 2.0 will likely resemble that of the SUS.
+% <<eval=FALSE>>=
+% scree(m.orisus[,c(1,3,5,7,9)])
+% fa(m.sus2[,2:5],3)$loadings
+% fa(m.sus2[,2:5],2)$loadings
+% fa(m.sus2[,2:5],1)$loadings
+% @
+
+\subsection{Comparing Scale Sensitivity}
+A good usability scale should exhibit a high level of sensitivity to reflect even subtle differences in usability. We conducted a second survey study in a post-course survey of an online course that ran on a different system (web interface) to investigate how an example of the proposed alternative scale (items 3, 6, 9, 10 from Table \ref{tab:items}) compares to the SUS in terms of sensitivity.
+
+The two systems offered the same basic features, i.e. browsing and playing video lectures, but differed considerably in their design. We employed Molich and Nielsen's heuristic evaluation criteria \cite{molich1990improving} to informally establish which system has better usability. While both systems showed generally high usability, one system was deemed superior in four evaluation categories: match between system and the real world, consistency and standards, aesthetic and minimalist design, and help and documentation. This informal usability comparison was the basis for labeling one system as having `high usability' and the other `low usability'.
+
+A Mann-Whitney test of the difference between the usability ratings for the two systems for each scale suggests that one the alternative scale example is more sensitive than the SUS ($W$=18585, $p$=0.069 for the SUS; $W$=17744, $p$=0.014 for the alternative scale). This result is based on 439 usability ratings of the low-usability system and 96 of the high-usability system. Although this comparison uses relatively small sample sizes and only four items from the proposed alternative scale, this finding could point at further potential benefits of using a more robust scale than the SUS.
+
+%Figure \ref{fig:sens} illustrates usability ratings on the SUS and an example of the alternative scale for the high-usability and the low-usability system. As the usability scores from both scales were not normally distributed, 95\% confidence intervals were computed from 10,000 bootstrap replicates using the adjusted bootstrap percentile method.  While the SUS is not sensitive enough to differentiate the usability of the two interfaces with 95\% confidence, the alternative scale exhibits good sensitivity. 
+<<eval=FALSE>>=
+# wilcox.test(convSUS(rbind(m.orisus[,1:10],m.revsus[,1:10])), convSUS(rbind(a.orisus[,1:10],a.revsus[,1:10])), conf.int=T)
+# wilcox.test(rowSums(m.sus2[,2:5])/.18, rowSums(a.sus2[,2:5])/.18, conf.int=T)
+
+wilcox.test(convSUS(m.orisus[,1:10]), convSUS(a.orisus[,1:10]), conf.int=T)
+wilcox.test(sample(rowSums(m.sus2[,2:5])/.18,439), sample(rowSums(a.sus2[,2:5])/.18,96), conf.int=T)
+@
+% 
+% <<sens, fig.height=2.5, fig.width=4.5, fig.cap='Evaluation of scale sensitivity for the SUS and alternative scale showing that both are sensitive enough to distinguish between a high and low usability system'>>=
+% subMean = function(data, indices) {mean(data[indices])}
+% m.oriBoot = boot(data=convSUS(rbind(m.orisus[,1:10],m.revsus[,1:10])), statistic=subMean, R=10000)
+% a.oriBoot = boot(data=convSUS(rbind(a.orisus[,1:10],a.revsus[,1:10])), statistic=subMean, R=10000)
+% m.sus2Boot = boot(data=rowSums(m.sus2[,2:5])/.18, statistic=subMean, R=10000)
+% a.sus2Boot = boot(data=rowSums(a.sus2[,2:5])/.18, statistic=subMean, R=10000)
+% 
+% #  boot.ci(m.oriBoot, type="bca") # (78.21, 80.20 )  
+% #  boot.ci(a.oriBoot, type="bca") # (80.96, 85.11 )  
+% #  boot.ci(m.sus2Boot, type="bca") # (75.69, 77.63 )  
+% #  boot.ci(a.sus2Boot, type="bca") # (78.78, 82.33 )  
+% 
+% sensDat=data.frame(
+%     sus=c("SUS", "SUS", "Alternative\nScale", "Alternative\nScale"),
+%     system=c("Low-Usability System","High-Usability System  ","Low-Usability System","High-Usability System  "),
+%     score=c(m.oriBoot$t0, a.oriBoot$t0, m.sus2Boot$t0, a.sus2Boot$t0),
+%     lwr=c(78.21, 80.96, 75.69, 78.78),
+%     upr=c(80.20, 85.11, 77.63, 82.33))
+%     
+% ggplot(sensDat, aes(x=score, y=sus, xmin=lwr, xmax=upr, linetype=system)) +
+%     geom_point(size=2) +
+%     geom_errorbarh(height=.5) +
+%     theme_bw() +
+%     scale_x_continuous(breaks=seq(0,100,2)) +
+%     theme(legend.position="bottom", legend.key=element_blank(), strip.background=element_blank(), strip.text=element_text(face="bold"), legend.key.width=unit(1, "cm")) +
+%     labs(x="Scores with 95% C.I.", y="", linetype="")
+% @
+
+
+\section{Conclusion}
+
+This note's unique contribution is to critique the SUS from a questionnaire design perspective which has not been done before. We find strong evidence that the SUS induces acquiescence bias and show how a robust alternative scale with statements rephrased as questions and relevant answer scales achieves higher sensitivity in measuring usability than the SUS.
+
+Future work should investigate the strength of association between the SUS and the proposed alternative scale, and establish the latter's reliability, validity, and factor structure. While more work on evaluating the proposed alternative scale is needed, the authors recommend using a more robust scale for measuring usability.
+
+
+\section{Acknowledgments}
+We are grateful to the instructors of the two Stanford courses for allowing us to conduct survey experiments in their post-course surveys.
+
+\begin{sidewaystable}
+\small
+\centering
+\caption{Original and reversed SUS items and updated SUS items with corresponding answer scales}
+\label{tab:items}
+\begin{tabular}{| r | p{5cm} | p{5cm} | p{3.5cm} | p{6cm} |}
+\hline
+\textbf{\#}  & \textbf{Original SUS$^\ast$} & \textbf{Reversed SUS$^\ast$} & \textbf{Proposed Alternative} & \textbf{Proposed Answer Scale}\\
+\hline
+1 & I think that I would like to use this system frequentl & I do not think that I would like to use this system frequently & How much do you like or dislike the system? & \{Extremely, Moderately, Slightly\} dislike, Neither like nor dislike, \{Slightly, Moderately, Extremely\} like \\ \hline
+2  & I found the system unnecessarily complex & I found the system appropriately simple & How complex is the system? & \{Not at all, Slightly, Moderately, Very, Extremely\} complex\\ \hline
+3  & I thought the system was easy to use & I thought the system was hard to use & How easy or difficult is it to use the system? & \{Extremely, Moderately, Slightly\} difficult, Neither difficult nor easy, \{Slightly, Moderately, Extremely\} easy\\ \hline
+4  & I think that I would need the support of a technical person to be able to use this system & I think that I would not need any support of a technical person to be able to use this system  & How likely are you to need the support of a technical person to be able to use the system? & \{Extremely, Very, Somewhat\} unlikely, Neither likely nor unlikely, \{Somewhat, Very, Extremely\} likely\\ \hline
+5  & I found the various functions in this system were well integrated & I found the various functions in this system were not well integrated & How integrated are the system's various functions? & \{Not at all, Slightly, Moderately, Very, Extremely\} integrated\\ \hline
+6  & I thought there was too much inconsistency in this system & I did not think there was too much inconsistency in this system & How consistent is the system? & \{Not at all, Slightly, Moderately, Very, Extremely\} consistent\\ \hline
+7  & I would imagine that most people would learn to use this system very quickly  & I would imagine that most people would learn to use this system very slowly & How easy or difficult is it to learn how to use the system? & \{Extremely, Moderately, Slightly\} difficult, Neither difficult nor easy, \{Slightly, Moderately, Extremely\} easy\\ \hline
+8  & I found the system very cumbersome to use & I found the system very manageable to use & How cumbersome is it to use the system? & \{Not at all, Slightly, Moderately, Very, Extremely\} cumbersome\\ \hline
+9  & I felt very confident using the system & I did not feel very confident using the system & How confident are you using the system? & \{Not at all, Slightly, Moderately, Very, Extremely\} confident\\ \hline
+10  & I needed to learn a lot of things before I could get going with this system   & I needed to learn very few things before I could get going with this system  & How much more is there to learn about the system? & Nothing at all, A little, A moderate amount, A lot, A great deal\\ \hline
+\multicolumn{5}{c}{\scriptsize{$^\ast$Items were presented in a matrix with a 5-point Likert scale: Strongly disagree (1), (2), (3), (4), Strongly agree (5)}}
+\end{tabular}
+\end{sidewaystable}
+
+\bibliographystyle{acm-sigchi}
+\bibliography{suslit}
+\end{document}
