@@ -146,12 +146,6 @@ Each of the ten items of the SUS is constructed of a non-neutral statement and a
 
 Notably, some of the items in the SUS have been reverse-keyed to ask about the same construct from opposite directions, as for example in items 3 (``easy to use") and 8 (``cumbersome to use"). It may be that potential acquiescence bias effects cancel each other out; however, this claim requires empirical evaluation. Nevertheless, this reverse-keyed approach is used only for a subset of the items in the SUS, hence, all other items (1, 2, 4, 5, 6, 7, 9, 10) remain vulnerable to significant acquiescence bias. While some items (e.g., 4 and 10) are reasonably similar, they effectively tap into different underlying constructs and are thus unlikely to mitigate any biases. The SUS's agreement scale is offered as a bipolar scale with five points. As agreement/disagreement is bipolar, the appropriate scale length would be seven points to maximize reliability and data differentiation \cite{krosnickFabrigar1997}.
 
-\subsection{Experimental Evaluation}
-
-To provide empirical support for the principal claim that the SUS is vulnerable to acquiescence bias in particular, we ran an online survey experiment with 877 participants who evaluated an online learning system. Participants of a massive open online course were asked to complete an optional post-course survey. Respondents were randomly assigned to one of two groups: one received the original SUS (n=439) and the other the reversed SUS (n=438) (Table \ref{tab:items}). The system respondents were asked to evaluate comprised of the course sites for browsing and watching lecture videos. 
-
-A comparison between scores from the original and reversed SUS provides strong evidence that the SUS induces acquiescence bias. Without acquiescence bias, the average for each item on the original SUS would not be significantly different from the reverse-coded average for each item on the reversed SUS. However, if acquiescence bias exists, respondents would tend to agree with statements independent of the statement's tone, which would be reflected in a significant difference between the original SUS average and reversed SUS reverse-coded average. Table \ref{tab:acqui} provides means, standard deviations, and p-values from Mann-Whitney tests of the hypothesis that there is no location shift. We find highly significant differences with at least 99\% confidence in all but two items and the overall SUS score. This is very strong evidence for the claim that the original SUS induces acquiescence bias.
-
 \begin{table}
 \small
 \centering
@@ -178,6 +172,17 @@ overall & 80.58 & 16.14 & 77.92 & 14.23 & \textless0.001\\
 \caption{Original and reversed SUS scores providing strong evidence for acquiescence bias.}
 \label{tab:acqui}
 \end{table}
+
+\subsection{Experimental Evaluation}
+
+To provide empirical support for the principal claim that the SUS is vulnerable to acquiescence bias in particular, we ran an online survey experiment with 877 participants who evaluated an online learning system. Participants of a massive open online course were asked to complete an optional post-course survey. Respondents were randomly assigned to one of two groups: one received the original SUS (n=439) and the other the reversed SUS (n=438) (Table \ref{tab:items}). The system respondents were asked to evaluate comprised of the course sites for browsing and watching lecture videos. 
+
+A comparison between scores from the original and reversed SUS provides strong evidence that the SUS induces acquiescence bias. Without acquiescence bias, the average for each item on the original SUS would not be significantly different from the reverse-coded average for each item on the reversed SUS. However, if acquiescence bias exists, respondents would tend to agree with statements independent of the statement's tone, which would be reflected in a significant difference between the original SUS average and reversed SUS reverse-coded average. Table \ref{tab:acqui} provides means, standard deviations, and p-values from Mann-Whitney tests of the hypothesis that there is no location shift. We find highly significant differences with at least 99\% confidence in all but two items and the overall SUS score. This is very strong evidence for the claim that the original SUS induces acquiescence bias.
+
+\section{Alternative Proposal}
+
+In this section we propose and discuss an alternative usability scale. Recent questionnaire design insights are used to change the wording of the different SUS items and the response scales. An experiment illustrates its quality and sensitivity as compared to SUS.  
+
 <<eval=FALSE>>=
 testItems=function(i, oa, ra){
     print(paste(i, round(mean(oa),2), round(sd(oa),2), round(mean(ra),2), round(sd(ra),2), round(wilcox.test(oa,ra)$p.value,5), sep=" & "))
@@ -187,9 +192,6 @@ for(i in 1:10){
 }
 testItems("all", convSUS(m.orisus[,1:10]), convSUS(m.revsus[,1:10]))
 @
-\section{Alternative Proposal}
-
-In this section we propose and discuss an alternative usability scale. Recent questionnaire design insights are used to change the wording of the different SUS items and the response scales. An experiment illustrates its quality and sensitivity as compared to SUS.  
 
 \subsection{Proposed Wording Changes}
 
@@ -213,7 +215,7 @@ wilcox.test(sample(rowSums(m.sus2[,2:5])/.18,439), sample(rowSums(a.sus2[,2:5])/
 
 \subsubsection{Comparing Psychometric Properties}
 %As the psychometric properties of the SUS have been studied extensively \cite{lewis2009factor}, a brief evaluation of key statistics should be sufficient here.
-Table \ref{tab:dist} provides an overview of statistics and psychometric properties of the original and reversed SUS, and an example (items 3, 6, 9, 10) of the alternative scale proposed above. The scales share similar distributional characteristics, but the SUS has higher internal consistency than the alternative scale in terms of Cronbach's $\alpha$. However, the SUS is 2.5 times longer than the example of the alternative scale which increases reliability. A factor analysis yields two eigenvalues greater than one for the SUS, consistent with previous work on the SUS's factor structure \cite{lewis2009factor}.
+Table \ref{tab:dist} provides statistics and psychometric properties of the original and reversed SUS, and an example (items 3, 6, 9, 10) of the alternative scale. They share similar distributional characteristics, but the SUS has higher reliability than the alternative scale in terms of Cronbach's $\alpha$. A factor analysis yields two eigenvalues greater than one for the SUS, consistent with previous work on its factor structure \cite{lewis2009factor}.
 
 \begin{table}[h!]
 \small
